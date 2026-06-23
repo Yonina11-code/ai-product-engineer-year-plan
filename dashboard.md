@@ -9,6 +9,8 @@
 
 当前学习问答：[第1周学习问答](./notes/week-01-qa.md)
 
+全年课程目录：[第1～48周课程索引](./docs/curriculum-index.md)
+
 ## 总进度
 
 - [ ] Q1：大模型基础、Prompt、结构化输出
