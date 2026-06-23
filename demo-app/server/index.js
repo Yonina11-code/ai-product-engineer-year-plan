@@ -1,5 +1,6 @@
 import http from 'node:http'
 import { handleLab01Rewrite } from './labs/01-ai-app-chain/handler.js'
+import { handleLab02Generate } from './labs/02-model-uncertainty/handler.js'
 
 const port = 3001
 
@@ -27,6 +28,19 @@ const server = http.createServer(async (request, response) => {
     request.url === '/api/labs/01/rewrite'
   ) {
     await handleLab01Rewrite({
+      request,
+      response,
+      readJsonBody,
+      sendJson,
+    })
+    return
+  }
+
+  if (
+    request.method === 'POST' &&
+    request.url === '/api/labs/02/generate'
+  ) {
+    await handleLab02Generate({
       request,
       response,
       readJsonBody,

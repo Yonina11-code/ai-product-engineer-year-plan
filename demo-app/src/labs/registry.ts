@@ -18,10 +18,10 @@ export const labs: LabDefinition[] = [
   },
   {
     id: '02',
-    title: '真实模型 API',
-    description: '安全地接入真实大模型，并处理密钥、超时和错误。',
-    path: '',
-    status: 'coming-soon',
-    topics: ['模型 API', '环境变量', '错误处理'],
+    title: '模型不确定性',
+    description: '比较不同生成倾向，理解 Temperature、波动和评测标准。',
+    path: '/labs/02-model-uncertainty',
+    status: 'available',
+    topics: ['Temperature', '不确定性', '幻觉', '评测'],
   },
 ]
