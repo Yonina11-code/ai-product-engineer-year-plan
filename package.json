@@ -1,0 +1,13 @@
+{
+  "name": "ai-product-engineer-year-plan",
+  "version": "1.0.0",
+  "private": true,
+  "description": "Personal one-year AI Product Engineer learning project",
+  "type": "module",
+  "scripts": {
+    "progress": "node scripts/progress.mjs"
+  },
+  "engines": {
+    "node": ">=18"
+  }
+}
