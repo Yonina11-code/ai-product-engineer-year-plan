@@ -68,6 +68,7 @@
 ai-product-engineer-year-plan/
 ├─ docs/                  年度路线、知识地图、学习规则
 ├─ demo-app/              所有课程共用的 Vue Demo 项目
+├─ notes/                 学习过程中产生的真实问答
 ├─ weeks/                 每周课程和作业
 ├─ projects/              三个实战项目
 ├─ templates/             PRD、Prompt、评测和复盘模板
