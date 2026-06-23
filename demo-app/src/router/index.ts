@@ -2,6 +2,7 @@ import { createRouter, createWebHistory } from 'vue-router'
 import LabHomeView from '@/views/LabHomeView.vue'
 import AiAppChainView from '@/labs/01-ai-app-chain/AiAppChainView.vue'
 import ModelUncertaintyView from '@/labs/02-model-uncertainty/ModelUncertaintyView.vue'
+import CurriculumLabView from '@/views/CurriculumLabView.vue'
 
 const router = createRouter({
   history: createWebHistory(),
@@ -20,6 +21,11 @@ const router = createRouter({
       path: '/labs/02-model-uncertainty',
       name: 'lab-02-model-uncertainty',
       component: ModelUncertaintyView,
+    },
+    {
+      path: '/labs/week-:week',
+      name: 'curriculum-lab',
+      component: CurriculumLabView,
     },
   ],
 })

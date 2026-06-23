@@ -609,6 +609,8 @@ ${bodyByDay[day]}
 - 不清楚的接口字段已经停下来确认，没有自行猜测。
 
 返回本周总览：[第${week}周课程](../../weeks/week-${number}.md)
+
+对应实验：[打开 LAB ${number}](http://localhost:5180/labs/week-${number})
 `
 }
 
@@ -621,6 +623,8 @@ const makeWeek = ([week, title, module, concepts, practice, deliverable]) => {
 建议投入：每周累计 5～8 小时，每次 45～90 分钟
 
 学习方式：概念理解 → 小实验 → 工程实现 → 失败分析 → 验收复盘
+
+对应 Demo：[打开 LAB ${number}](http://localhost:5180/labs/week-${number})
 
 ## 本周目标
 
@@ -800,7 +804,7 @@ ${[...grouped.entries()].map(([module, items]) => `## ${module}
 
 ${items.map(([week, title]) => {
   const number = String(week).padStart(2, '0')
-  return `- [第${week}周：${title}](../weeks/week-${number}.md) — [D1](../lessons/week-${number}/day-01.md) · [D2](../lessons/week-${number}/day-02.md) · [D3](../lessons/week-${number}/day-03.md) · [D4](../lessons/week-${number}/day-04.md) · [D5](../lessons/week-${number}/day-05.md)`
+  return `- [第${week}周：${title}](../weeks/week-${number}.md) — [D1](../lessons/week-${number}/day-01.md) · [D2](../lessons/week-${number}/day-02.md) · [D3](../lessons/week-${number}/day-03.md) · [D4](../lessons/week-${number}/day-04.md) · [D5](../lessons/week-${number}/day-05.md) · [Demo](http://localhost:5180/labs/week-${number})`
 }).join('\n')}`).join('\n\n')}
 
 ## 使用规则
@@ -809,10 +813,60 @@ ${items.map(([week, title]) => {
 - 允许查看全貌，但当前周未通过时不提前堆叠实现；
 - 每天教材是完整学习基线，老师会结合你的经验调整免修项；
 - 涉及模型、框架和协议的具体 API，学习当周必须按官方文档复核；
-- Demo 只在进入对应主题时实现，避免生成大量未经验证的样板代码。
+- LAB 01、02 使用专用页面，LAB 03～48 使用对应模块的可交互实验工作台。
 `
 
 fs.writeFileSync(path.join(root, 'docs', 'curriculum-index.md'), index)
+
+const labModeByModule = {
+  模型基础: 'model',
+  'Prompt Engineering': 'prompt',
+  'AI 评测': 'evaluation',
+  可靠输出: 'schema',
+  项目一: 'project',
+  工具调用: 'tool',
+  Agent: 'agent',
+  MCP: 'mcp',
+  'RAG 基础': 'rag',
+  检索质量: 'rag',
+  'RAG 可靠性': 'rag',
+  'RAG 评测': 'evaluation',
+  项目二: 'project',
+  产品工程: 'product',
+  项目三: 'product',
+  工程化: 'operations',
+  转型准备: 'portfolio',
+  年度验收: 'portfolio',
+}
+
+const generatedLabs = curriculum
+  .filter(([week]) => week >= 3)
+  .map(([week, title, module, concepts, practice, deliverable]) => ({
+    id: String(week).padStart(2, '0'),
+    title,
+    description: practice,
+    path: `/labs/week-${String(week).padStart(2, '0')}`,
+    status: 'available',
+    topics: concepts,
+    module,
+    mode: labModeByModule[module] ?? 'project',
+    practice,
+    deliverable,
+    lessonPath: `/lessons/week-${String(week).padStart(2, '0')}/day-03.md`,
+  }))
+
+const generatedLabsSource = `import type { LabDefinition } from './registry'
+
+// 本文件由 scripts/generate-full-curriculum.mjs 生成。
+// 修改全年课程数据后，运行 npm run curriculum:generate。
+export const generatedLabs: LabDefinition[] = ${JSON.stringify(generatedLabs, null, 2)}
+`
+
+fs.writeFileSync(
+  path.join(root, 'demo-app', 'src', 'labs', 'generated-labs.ts'),
+  generatedLabsSource,
+)
+
 console.log(
-  `Generated ${curriculum.length} weekly courses, ${curriculum.length * 5} daily lessons, and curriculum index.`,
+  `Generated ${curriculum.length} weekly courses, ${curriculum.length * 5} daily lessons, ${generatedLabs.length} demo definitions, and curriculum index.`,
 )

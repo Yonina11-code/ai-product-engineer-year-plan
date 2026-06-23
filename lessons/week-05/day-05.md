@@ -63,3 +63,5 @@ reviews/week-05.md
 - 不清楚的接口字段已经停下来确认，没有自行猜测。
 
 返回本周总览：[第5周课程](../../weeks/week-05.md)
+
+对应实验：[打开 LAB 05](http://localhost:5180/labs/week-05)

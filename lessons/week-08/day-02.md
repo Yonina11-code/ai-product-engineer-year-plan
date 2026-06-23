@@ -67,3 +67,5 @@ if (!builder) throw new Error('不支持的任务类型')
 - 不清楚的接口字段已经停下来确认，没有自行猜测。
 
 返回本周总览：[第8周课程](../../weeks/week-08.md)
+
+对应实验：[打开 LAB 08](http://localhost:5180/labs/week-08)

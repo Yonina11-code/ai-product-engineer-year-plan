@@ -64,3 +64,5 @@ server.tool('lookup_contract', inputSchema, async (input) => {
 - 不清楚的接口字段已经停下来确认，没有自行猜测。
 
 返回本周总览：[第23周课程](../../weeks/week-23.md)
+
+对应实验：[打开 LAB 23](http://localhost:5180/labs/week-23)
