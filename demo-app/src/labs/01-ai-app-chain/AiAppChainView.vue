@@ -1,16 +1,34 @@
 <script setup lang="ts">
-import { ref } from 'vue'
+import { onMounted, ref } from 'vue'
 import { RouterLink } from 'vue-router'
+import { getDeepSeekStatus } from '@/shared/provider-status'
 import { rewriteMessage } from './api'
 import type { RewriteResult } from './types'
 
 const audience = ref('同事')
 const tone = ref('专业、直接')
 const originalText = ref('')
+const provider = ref<'mock' | 'deepseek'>('mock')
+const deepSeekConfigured = ref(false)
+const deepSeekModel = ref('deepseek-v4-flash')
 const isLoading = ref(false)
 const status = ref('')
 const errorMessage = ref('')
 const result = ref<RewriteResult | null>(null)
+
+onMounted(async () => {
+  try {
+    const status = await getDeepSeekStatus()
+    deepSeekConfigured.value = status.configured
+    deepSeekModel.value = status.model
+
+    if (status.configured) {
+      provider.value = 'deepseek'
+    }
+  } catch {
+    deepSeekConfigured.value = false
+  }
+})
 
 async function handleSubmit() {
   const text = originalText.value.trim()
@@ -32,6 +50,7 @@ async function handleSubmit() {
       originalText: text,
       audience: audience.value,
       tone: tone.value,
+      provider: provider.value,
     })
     status.value = '改写完成。'
   } catch (error) {
@@ -58,6 +77,19 @@ async function handleSubmit() {
         </p>
 
         <form class="rewrite-form" @submit.prevent="handleSubmit">
+          <label>
+            <span>模型来源</span>
+            <select v-model="provider">
+              <option value="mock">教学 Mock</option>
+              <option value="deepseek" :disabled="!deepSeekConfigured">
+                DeepSeek {{ deepSeekModel }}
+              </option>
+            </select>
+            <small v-if="!deepSeekConfigured" class="field-note">
+              DeepSeek 尚未配置，请在工程根目录创建 .env。
+            </small>
+          </label>
+
           <label>
             <span>沟通对象</span>
             <select v-model="audience">
@@ -99,6 +131,12 @@ async function handleSubmit() {
         </p>
 
         <section v-if="result" class="result-panel">
+          <p class="model-meta">
+            来源：{{ result.metadata.model }}
+            <template v-if="result.metadata.usage?.total_tokens">
+              · Token：{{ result.metadata.usage.total_tokens }}
+            </template>
+          </p>
           <h2>改写结果</h2>
           <p>{{ result.rewrittenText }}</p>
           <h3>修改说明</h3>
@@ -180,6 +218,17 @@ h1 {
   margin: 12px 0 28px;
   color: #657086;
   line-height: 1.7;
+}
+
+.field-note,
+.model-meta {
+  color: #7a8497;
+  font-size: 13px;
+  font-weight: 400;
+}
+
+.model-meta {
+  margin: 0 0 14px;
 }
 
 .rewrite-form {

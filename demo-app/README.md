@@ -44,3 +44,12 @@ http://localhost:5180
 前端开发服务使用 `5180` 端口，公共 API 服务使用 `3001` 端口。
 
 停止时在终端按 `Ctrl + C`。
+
+## 配置真实 DeepSeek
+
+按照：
+
+[`DeepSeek V4 Flash 接入说明`](../docs/deepseek-api-setup.md)
+
+填写工程根目录 `.env` 后重启服务。页面会自动检测配置状态，并允许在
+“教学 Mock”和“DeepSeek”之间切换。

@@ -388,3 +388,56 @@ POST /api/reply         → 使用回复 Prompt
 - Workflow；
 - 结构化输出；
 - 确定性规则与模型决策边界。
+
+---
+
+## Q6：怎样把 Mock 模型替换为 DeepSeek V4 Flash？
+
+### 直接结论
+
+API Key 只配置在服务端 `.env`，Vue 前端只提交业务参数和模型来源。
+
+当前工程已经支持：
+
+```text
+教学 Mock ↔ DeepSeek deepseek-v4-flash
+```
+
+详细步骤：
+
+[DeepSeek V4 Flash 接入说明](../docs/deepseek-api-setup.md)
+
+### 调用链路
+
+```text
+Vue 选择 DeepSeek
+→ 服务端读取 DEEPSEEK_API_KEY
+→ 构造 messages
+→ POST https://api.deepseek.com/chat/completions
+→ 解析 JSON
+→ 校验业务字段
+→ 返回 Vue
+```
+
+### 为什么不能把 Key 传给 Vue？
+
+- 浏览器代码和请求可以被用户查看；
+- Key 泄露后可能产生未经授权的费用；
+- 服务端无法可靠控制调用权限和频率；
+- Prompt、日志、费用统计和结果校验应统一由服务端管理。
+
+### 当前使用的模型
+
+```text
+deepseek-v4-flash
+```
+
+这是截至 2026-06-23 DeepSeek 官方文档列出的有效模型标识。
+
+### 对应知识点
+
+- 服务端环境变量；
+- Bearer 鉴权；
+- 模型适配层；
+- JSON Output；
+- Token 用量与成本。

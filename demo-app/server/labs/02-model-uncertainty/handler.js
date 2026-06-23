@@ -1,3 +1,5 @@
+import { createDeepSeekChatCompletion } from '../../shared/deepseek-client.js'
+
 const stableResults = [
   '当前需求在现有条件下存在实现困难，建议先明确需求范围和实现条件，再评估可行方案。',
   '当前需求存在实现上的困难，建议我们先确认需求边界和前置条件，再讨论可行方案。',
@@ -78,6 +80,7 @@ export async function handleLab02Generate({
     const data = await readJsonBody(request)
     const originalText = data?.originalText?.trim()
     const temperature = Number(data?.temperature)
+    const provider = data?.provider === 'deepseek' ? 'deepseek' : 'mock'
 
     if (!originalText) {
       sendJson(response, 400, {
@@ -97,11 +100,88 @@ export async function handleLab02Generate({
       return
     }
 
+    if (provider === 'deepseek') {
+      const completion = await createDeepSeekChatCompletion({
+        messages: [
+          {
+            role: 'system',
+            content: `你是一名职场沟通改写助手。
+
+任务：针对同一条用户原话生成 3 个不同的专业改写结果。
+
+要求：
+1. 保持原意和立场。
+2. 不虚构原因、时间、排期或承诺。
+3. 每个结果都应适合真实职场沟通。
+4. 只输出 JSON，不要输出 Markdown。
+
+JSON 格式：
+{
+  "results": [
+    { "text": "结果一" },
+    { "text": "结果二" },
+    { "text": "结果三" }
+  ]
+}`,
+          },
+          {
+            role: 'user',
+            content: `请输出 json。\n\n用户原话：${originalText}`,
+          },
+        ],
+        temperature,
+        responseFormat: {
+          type: 'json_object',
+        },
+        maxTokens: 700,
+      })
+
+      let parsed
+
+      try {
+        parsed = JSON.parse(completion.content)
+      } catch {
+        throw new Error('DeepSeek 返回的 JSON 无法解析。')
+      }
+
+      if (!Array.isArray(parsed?.results) || parsed.results.length < 3) {
+        throw new Error('DeepSeek 没有返回三个有效结果。')
+      }
+
+      const results = parsed.results.slice(0, 3).map((item, index) => ({
+        id: index + 1,
+        text: typeof item?.text === 'string' ? item.text.trim() : '',
+        addedInformation: [],
+      }))
+
+      if (results.some((item) => !item.text)) {
+        throw new Error('DeepSeek 返回的结果存在空内容。')
+      }
+
+      sendJson(response, 200, {
+        temperature,
+        results,
+        notice:
+          '本轮结果来自 DeepSeek。是否存在无依据信息，需要你根据原始输入自行评测。',
+        metadata: {
+          provider: 'deepseek',
+          model: completion.model,
+          usage: completion.usage,
+        },
+      })
+      return
+    }
+
     sendJson(response, 200, {
       temperature,
       results: buildResults(temperature),
       notice:
         '这是教学模拟，用于观察生成倾向；真实模型的行为还受模型版本、Prompt 和参数等因素影响。',
+      metadata: {
+        provider: 'mock',
+        model: 'teaching-mock',
+        usage: null,
+      },
     })
   } catch (error) {
     sendJson(response, 500, {

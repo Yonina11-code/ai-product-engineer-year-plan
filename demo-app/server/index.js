@@ -1,6 +1,7 @@
 import http from 'node:http'
 import { handleLab01Rewrite } from './labs/01-ai-app-chain/handler.js'
 import { handleLab02Generate } from './labs/02-model-uncertainty/handler.js'
+import { getDeepSeekStatus } from './shared/deepseek-client.js'
 
 const port = 3001
 
@@ -53,6 +54,11 @@ const server = http.createServer(async (request, response) => {
     sendJson(response, 200, {
       status: 'ok',
     })
+    return
+  }
+
+  if (request.method === 'GET' && request.url === '/api/providers/deepseek') {
+    sendJson(response, 200, getDeepSeekStatus())
     return
   }
 

@@ -3,6 +3,7 @@ import type { ApiError, GenerateResponse } from './types'
 export async function generateComparison(
   originalText: string,
   temperature: number,
+  provider: 'mock' | 'deepseek',
 ): Promise<GenerateResponse> {
   const response = await fetch('/api/labs/02/generate', {
     method: 'POST',
@@ -12,6 +13,7 @@ export async function generateComparison(
     body: JSON.stringify({
       originalText,
       temperature,
+      provider,
     }),
   })
 

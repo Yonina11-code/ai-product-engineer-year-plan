@@ -26,6 +26,10 @@ http://localhost:5180/labs/02-model-uncertainty
 npm run demo
 ```
 
+如果要使用真实 DeepSeek V4 Flash，先完成：
+
+[`DeepSeek V4 Flash 接入说明`](../../docs/deepseek-api-setup.md)
+
 ## 1. 大模型不是答案数据库
 
 传统数据库查询更接近：

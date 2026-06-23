@@ -1,15 +1,35 @@
 <script setup lang="ts">
-import { computed, ref } from 'vue'
+import { computed, onMounted, ref } from 'vue'
 import { RouterLink } from 'vue-router'
+import { getDeepSeekStatus } from '@/shared/provider-status'
 import { generateComparison } from './api'
 import type { GenerationResult } from './types'
 
 const originalText = ref('这个需求根本做不了，你们先想清楚再说。')
 const temperature = ref(0.2)
+const provider = ref<'mock' | 'deepseek'>('mock')
+const deepSeekConfigured = ref(false)
+const deepSeekModel = ref('deepseek-v4-flash')
 const isLoading = ref(false)
 const errorMessage = ref('')
 const results = ref<GenerationResult[]>([])
 const notice = ref('')
+const usedModel = ref('')
+const totalTokens = ref<number | null>(null)
+
+onMounted(async () => {
+  try {
+    const status = await getDeepSeekStatus()
+    deepSeekConfigured.value = status.configured
+    deepSeekModel.value = status.model
+
+    if (status.configured) {
+      provider.value = 'deepseek'
+    }
+  } catch {
+    deepSeekConfigured.value = false
+  }
+})
 
 const temperatureLabel = computed(() => {
   if (temperature.value <= 0.3) {
@@ -36,9 +56,15 @@ async function handleGenerate() {
   errorMessage.value = ''
 
   try {
-    const data = await generateComparison(text, temperature.value)
+    const data = await generateComparison(
+      text,
+      temperature.value,
+      provider.value,
+    )
     results.value = data.results
     notice.value = data.notice
+    usedModel.value = data.metadata.model
+    totalTokens.value = data.metadata.usage?.total_tokens ?? null
   } catch (error) {
     results.value = []
     errorMessage.value =
@@ -64,6 +90,19 @@ async function handleGenerate() {
 
     <div class="workspace">
       <section class="control-panel">
+        <label>
+          <span>模型来源</span>
+          <select v-model="provider">
+            <option value="mock">教学 Mock</option>
+            <option value="deepseek" :disabled="!deepSeekConfigured">
+              DeepSeek {{ deepSeekModel }}
+            </option>
+          </select>
+          <small v-if="!deepSeekConfigured" class="field-note">
+            DeepSeek 尚未配置，请在工程根目录创建 .env。
+          </small>
+        </label>
+
         <label>
           <span>用户原话</span>
           <textarea v-model="originalText" rows="5" />
@@ -108,7 +147,13 @@ async function handleGenerate() {
     <section v-if="results.length" class="result-section">
       <div class="result-heading">
         <h2>本轮生成结果</h2>
-        <p>{{ notice }}</p>
+        <div>
+          <p>{{ notice }}</p>
+          <p class="model-meta">
+            来源：{{ usedModel }}
+            <template v-if="totalTokens">· Token：{{ totalTokens }}</template>
+          </p>
+        </div>
       </div>
 
       <div class="result-grid">
@@ -225,6 +270,28 @@ textarea {
   resize: vertical;
   font: inherit;
   line-height: 1.6;
+}
+
+select {
+  width: 100%;
+  padding: 12px 14px;
+  border: 1px solid #cfd5e2;
+  border-radius: 10px;
+  color: #172033;
+  background: #fff;
+  font: inherit;
+}
+
+.field-note,
+.model-meta {
+  color: #7a8497;
+  font-size: 13px;
+  font-weight: 400;
+}
+
+.model-meta {
+  margin-top: -4px;
+  text-align: right;
 }
 
 input[type='range'] {
