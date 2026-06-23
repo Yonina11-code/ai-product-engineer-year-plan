@@ -67,6 +67,7 @@
 ```text
 ai-product-engineer-year-plan/
 ├─ docs/                  年度路线、知识地图、学习规则
+├─ demo-app/              所有课程共用的 Vue Demo 项目
 ├─ weeks/                 每周课程和作业
 ├─ projects/              三个实战项目
 ├─ templates/             PRD、Prompt、评测和复盘模板
@@ -75,6 +76,9 @@ ai-product-engineer-year-plan/
 ├─ scripts/               本地学习辅助脚本
 └─ dashboard.md           当前进度入口
 ```
+
+所有编程实验都在 `demo-app/` 中按编号区分，不为每节课创建零散的原生
+HTML Demo。
 
 ## 我们的协作方式
 

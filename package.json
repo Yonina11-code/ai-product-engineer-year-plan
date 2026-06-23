@@ -5,9 +5,24 @@
   "description": "Personal one-year AI Product Engineer learning project",
   "type": "module",
   "scripts": {
-    "progress": "node scripts/progress.mjs"
+    "progress": "node scripts/progress.mjs",
+    "demo": "concurrently -k -n server,web -c yellow,cyan \"npm:demo:server\" \"npm:demo:web\"",
+    "demo:server": "node demo-app/server/index.js",
+    "demo:web": "vite --config demo-app/vite.config.ts",
+    "demo:check": "vue-tsc --noEmit -p demo-app/tsconfig.app.json"
   },
   "engines": {
     "node": ">=18"
+  },
+  "dependencies": {
+    "vue": "^3.5.38",
+    "vue-router": "^5.1.0"
+  },
+  "devDependencies": {
+    "@vitejs/plugin-vue": "^6.0.7",
+    "concurrently": "^10.0.3",
+    "typescript": "^6.0.3",
+    "vite": "^8.0.16",
+    "vue-tsc": "^3.3.5"
   }
 }

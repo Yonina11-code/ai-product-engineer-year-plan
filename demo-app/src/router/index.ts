@@ -1,0 +1,21 @@
+import { createRouter, createWebHistory } from 'vue-router'
+import LabHomeView from '@/views/LabHomeView.vue'
+import AiAppChainView from '@/labs/01-ai-app-chain/AiAppChainView.vue'
+
+const router = createRouter({
+  history: createWebHistory(),
+  routes: [
+    {
+      path: '/',
+      name: 'home',
+      component: LabHomeView,
+    },
+    {
+      path: '/labs/01-ai-app-chain',
+      name: 'lab-01-ai-app-chain',
+      component: AiAppChainView,
+    },
+  ],
+})
+
+export default router
