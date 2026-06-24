@@ -55,6 +55,7 @@ const filteredLabs = computed(() => {
       <article v-for="lab in filteredLabs" :key="lab.id" class="lab-card">
         <div class="lab-heading">
           <span class="lab-number">LAB {{ lab.id }}</span>
+          <span class="lab-week">W{{ lab.week ?? lab.id }} / D{{ lab.day ?? '03' }}</span>
           <span
             class="lab-status"
             :class="{ pending: lab.status === 'coming-soon' }"
@@ -65,6 +66,9 @@ const filteredLabs = computed(() => {
 
         <h2>{{ lab.title }}</h2>
         <small>{{ lab.module }}</small>
+        <small v-if="lab.lessonPath" class="lesson-path">
+          {{ lab.lessonPath }}
+        </small>
         <p>{{ lab.description }}</p>
 
         <ul class="topic-list">
@@ -103,7 +107,24 @@ const filteredLabs = computed(() => {
 }
 
 .lab-card small {
+  display: block;
   color: #8a93a5;
+}
+
+.lab-week {
+  padding: 4px 8px;
+  border-radius: 999px;
+  color: #4354c6;
+  background: #edf0ff;
+  font-size: 12px;
+  font-weight: 800;
+}
+
+.lesson-path {
+  margin-top: 4px;
+  font-family:
+    ui-monospace, SFMono-Regular, Menlo, Monaco, Consolas, 'Liberation Mono',
+    monospace;
 }
 
 @media (max-width: 640px) {

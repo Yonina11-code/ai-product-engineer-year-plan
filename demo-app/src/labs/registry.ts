@@ -24,6 +24,8 @@ export interface LabDefinition {
   topics: string[]
   module?: string
   mode?: LabMode
+  week?: string
+  day?: string
   practice?: string
   deliverable?: string
   lessonPath?: string
@@ -39,6 +41,9 @@ const customLabs: LabDefinition[] = [
     topics: ['Vue', 'HTTP API', 'Prompt', '输出校验'],
     module: '模型基础',
     mode: 'custom',
+    week: '01',
+    day: '01',
+    lessonPath: '/lessons/week-01/day-01.md',
   },
   {
     id: '02',
@@ -49,6 +54,9 @@ const customLabs: LabDefinition[] = [
     topics: ['Temperature', '不确定性', '幻觉', '评测'],
     module: '模型基础',
     mode: 'custom',
+    week: '01',
+    day: '02',
+    lessonPath: '/lessons/week-01/day-02.md',
   },
 ]
 

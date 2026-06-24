@@ -18,7 +18,9 @@ interface RagDocument {
 }
 
 const route = useRoute()
-const lab = computed(() => getLabById(String(route.params.week)))
+const lab = computed(() =>
+  getLabById(String(route.params.labId ?? route.params.week)),
+)
 const input = ref('')
 const secondaryInput = ref('')
 const numericValue = ref(3)
@@ -122,7 +124,7 @@ function resetExperiment() {
 }
 
 watch(
-  () => route.params.week,
+  () => route.params.labId ?? route.params.week,
   () => resetExperiment(),
 )
 
@@ -467,7 +469,10 @@ async function runExperiment() {
 
     <header class="lab-hero">
       <div>
-        <p class="eyebrow">LAB {{ lab.id }} · {{ lab.module }}</p>
+        <p class="eyebrow">
+          LAB {{ lab.id }} · Week {{ lab.week ?? lab.id }} · Day
+          {{ lab.day ?? '03' }} · {{ lab.module }}
+        </p>
         <h1>{{ lab.title }}</h1>
         <p>{{ lab.description }}</p>
       </div>
@@ -534,8 +539,10 @@ async function runExperiment() {
       </section>
 
       <aside class="task-panel">
-        <h2>本周主任务</h2>
+        <h2>本实验主任务</h2>
         <p>{{ lab.practice }}</p>
+        <h3>对应课程</h3>
+        <p>{{ lab.lessonPath }}</p>
         <h3>交付物</h3>
         <p>{{ lab.deliverable }}</p>
         <h3>使用方式</h3>
