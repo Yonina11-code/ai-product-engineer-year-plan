@@ -23,8 +23,18 @@ const router = createRouter({
       component: ModelUncertaintyView,
     },
     {
-      path: '/labs/:labId(\\d+)',
+      path: '/labs/:labId(\\d+)/day-:day(\\d+)',
       name: 'curriculum-lab',
+      component: CurriculumLabView,
+    },
+    {
+      path: '/labs/week-:week/day-:day(\\d+)',
+      name: 'curriculum-lab-week-day',
+      component: CurriculumLabView,
+    },
+    {
+      path: '/labs/:labId(\\d+)',
+      name: 'curriculum-lab-default',
       component: CurriculumLabView,
     },
     {

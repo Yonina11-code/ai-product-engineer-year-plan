@@ -804,7 +804,14 @@ ${[...grouped.entries()].map(([module, items]) => `## ${module}
 
 ${items.map(([week, title]) => {
   const number = String(week).padStart(2, '0')
-  return `- [第${week}周：${title}](../weeks/week-${number}.md) — [D1](../lessons/week-${number}/day-01.md) · [D2](../lessons/week-${number}/day-02.md) · [D3](../lessons/week-${number}/day-03.md) · [D4](../lessons/week-${number}/day-04.md) · [D5](../lessons/week-${number}/day-05.md) · [Demo](http://localhost:5180/labs/${number})`
+  const lessonLinks = `[D1](../lessons/week-${number}/day-01.md) · [D2](../lessons/week-${number}/day-02.md) · [D3](../lessons/week-${number}/day-03.md) · [D4](../lessons/week-${number}/day-04.md) · [D5](../lessons/week-${number}/day-05.md)`
+  if (week === 2) {
+    return `- [第${week}周：${title}](../weeks/week-${number}.md) — [D1](../lessons/week-${number}/day-01.md) · [Demo D1](http://localhost:5180/labs/week-${number}/day-01) · [D2](../lessons/week-${number}/day-02.md) · [Demo D2](http://localhost:5180/labs/week-${number}/day-02) · [D3](../lessons/week-${number}/day-03.md) · [Demo D3](http://localhost:5180/labs/week-${number}/day-03) · [D4](../lessons/week-${number}/day-04.md) · [Demo D4](http://localhost:5180/labs/week-${number}/day-04) · [D5](../lessons/week-${number}/day-05.md) · [Demo D5](http://localhost:5180/labs/week-${number}/day-05)`
+  }
+  if (week < 2) {
+    return `- [第${week}周：${title}](../weeks/week-${number}.md) — ${lessonLinks}`
+  }
+  return `- [第${week}周：${title}](../weeks/week-${number}.md) — [D1](../lessons/week-${number}/day-01.md) · [Demo D1](http://localhost:5180/labs/${number}/day-01) · [D2](../lessons/week-${number}/day-02.md) · [Demo D2](http://localhost:5180/labs/${number}/day-02) · [D3](../lessons/week-${number}/day-03.md) · [Demo D3](http://localhost:5180/labs/${number}/day-03) · [D4](../lessons/week-${number}/day-04.md) · [Demo D4](http://localhost:5180/labs/${number}/day-04) · [D5](../lessons/week-${number}/day-05.md) · [Demo D5](http://localhost:5180/labs/${number}/day-05)`
 }).join('\n')}`).join('\n\n')}
 
 ## 使用规则
@@ -813,7 +820,7 @@ ${items.map(([week, title]) => {
 - 允许查看全貌，但当前周未通过时不提前堆叠实现；
 - 每天教材是完整学习基线，老师会结合你的经验调整免修项；
 - 涉及模型、框架和协议的具体 API，学习当周必须按官方文档复核；
-- LAB 01、02 使用专用页面，LAB 03～48 使用编号入口和对应模块的可交互实验工作台。
+- LAB 01、02 使用专用页面，LAB 03～48 提供 D1～D5 每天独立入口，并复用对应模块的可交互实验工作台。
 `
 
 fs.writeFileSync(path.join(root, 'docs', 'curriculum-index.md'), index)
@@ -840,12 +847,15 @@ const labModeByModule = {
 }
 
 const generatedLabs = curriculum
-  .filter(([week]) => week >= 3)
+  .filter(([week]) => week >= 2)
   .map(([week, title, module, concepts, practice, deliverable]) => ({
-    id: String(week).padStart(2, '0'),
+    id: week === 2 ? 'W02' : String(week).padStart(2, '0'),
     title,
     description: practice,
-    path: `/labs/${String(week).padStart(2, '0')}`,
+    path:
+      week === 2
+        ? `/labs/week-${String(week).padStart(2, '0')}/day-03`
+        : `/labs/${String(week).padStart(2, '0')}/day-03`,
     status: 'available',
     topics: concepts,
     module,

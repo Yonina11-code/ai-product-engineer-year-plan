@@ -65,3 +65,7 @@ export const labs: LabDefinition[] = [...customLabs, ...generatedLabs]
 export function getLabById(id: string) {
   return labs.find((lab) => lab.id === id)
 }
+
+export function getLabByWeek(week: string) {
+  return labs.find((lab) => lab.week === week && lab.mode !== 'custom')
+}

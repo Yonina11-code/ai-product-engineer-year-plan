@@ -7,6 +7,7 @@
   "scripts": {
     "progress": "node scripts/progress.mjs",
     "curriculum:generate": "node scripts/generate-full-curriculum.mjs",
+    "advanced:generate": "node scripts/generate-advanced-job-track.mjs",
     "demo": "concurrently -k -n server,web -c yellow,cyan \"npm:demo:server\" \"npm:demo:web\"",
     "demo:server": "node --env-file-if-exists=.env demo-app/server/index.js",
     "demo:web": "vite --config demo-app/vite.config.ts",

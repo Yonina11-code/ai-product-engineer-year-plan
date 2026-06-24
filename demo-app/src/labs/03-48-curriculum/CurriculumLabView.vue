@@ -1,7 +1,7 @@
 <script setup lang="ts">
 import { computed, ref, watch } from 'vue'
 import { RouterLink, useRoute } from 'vue-router'
-import { getLabById } from '@/labs/registry'
+import { getLabById, getLabByWeek } from '@/labs/registry'
 
 interface TraceItem {
   step: string
@@ -19,8 +19,66 @@ interface RagDocument {
 
 const route = useRoute()
 const lab = computed(() =>
-  getLabById(String(route.params.labId ?? route.params.week)),
+  route.params.week
+    ? getLabByWeek(String(route.params.week))
+    : getLabById(String(route.params.labId)),
 )
+const dayConfigs = [
+  {
+    day: '01',
+    title: '建立概念模型',
+    goal: '先理解通用概念，不急着写代码。',
+    action: '完成概念拆解',
+    steps: ['读当天教材', '写出通用规律', '画出链路位置', '记录两个问题'],
+  },
+  {
+    day: '02',
+    title: '放进真实架构理解',
+    goal: '把概念放回前端、服务端和模型调用链路中。',
+    action: '完成架构定位',
+    steps: ['定位相关代码入口', '区分确定性代码和模型输出', '标出服务端边界', '写出自己的理解'],
+  },
+  {
+    day: '03',
+    title: '动手实现核心能力',
+    goal: '完成本周最小可运行实验。',
+    action: '运行本日实验',
+    steps: ['先用默认输入运行', '只改一个变量再运行', '记录 Trace 和输出变化', '把结论写进复盘'],
+  },
+  {
+    day: '04',
+    title: '失败、边界与评测',
+    goal: '主动制造失败样本，建立判断标准。',
+    action: '运行失败实验',
+    steps: ['准备正常样本', '准备边界样本', '准备失败样本', '用标准判断是否合格'],
+  },
+  {
+    day: '05',
+    title: '验收、复盘与迁移',
+    goal: '把本周知识变成能讲清、能复用的能力。',
+    action: '生成验收证据',
+    steps: ['三分钟讲清本周知识', '展示代码或实验结果', '回答验收问题', '写入周复盘'],
+  },
+]
+const currentDay = computed(() => {
+  const rawDay = String(route.params.day ?? lab.value?.day ?? '03')
+  const number = Number(rawDay)
+  return Number.isInteger(number) && number >= 1 && number <= 5
+    ? String(number).padStart(2, '0')
+    : '03'
+})
+const currentDayConfig = computed(
+  () => dayConfigs.find((item) => item.day === currentDay.value) ?? dayConfigs[2],
+)
+const currentLessonPath = computed(() =>
+  lab.value?.week
+    ? `/lessons/week-${lab.value.week}/day-${currentDay.value}.md`
+    : lab.value?.lessonPath,
+)
+const currentDayPath = (day: string) =>
+  lab.value?.id === 'W02'
+    ? `/labs/week-${lab.value.week}/day-${day}`
+    : `/labs/${lab.value?.id}/day-${day}`
 const input = ref('')
 const secondaryInput = ref('')
 const numericValue = ref(3)
@@ -124,7 +182,7 @@ function resetExperiment() {
 }
 
 watch(
-  () => route.params.labId ?? route.params.week,
+  () => [route.params.labId ?? route.params.week, route.params.day],
   () => resetExperiment(),
 )
 
@@ -471,13 +529,24 @@ async function runExperiment() {
       <div>
         <p class="eyebrow">
           LAB {{ lab.id }} · Week {{ lab.week ?? lab.id }} · Day
-          {{ lab.day ?? '03' }} · {{ lab.module }}
+          {{ currentDay }} · {{ lab.module }}
         </p>
         <h1>{{ lab.title }}</h1>
-        <p>{{ lab.description }}</p>
+        <p>{{ currentDayConfig.title }}：{{ currentDayConfig.goal }}</p>
       </div>
       <div class="mode-badge">{{ modeTitle }}</div>
     </header>
+
+    <nav class="day-tabs" aria-label="课程日期入口">
+      <RouterLink
+        v-for="item in dayConfigs"
+        :key="item.day"
+        :class="{ active: item.day === currentDay }"
+        :to="currentDayPath(item.day)"
+      >
+        D{{ item.day }} · {{ item.title }}
+      </RouterLink>
+    </nav>
 
     <div class="topic-list">
       <span v-for="topic in lab.topics" :key="topic">{{ topic }}</span>
@@ -534,23 +603,24 @@ async function runExperiment() {
         </label>
 
         <button type="button" :disabled="isRunning" @click="runExperiment">
-          {{ isRunning ? '正在运行…' : '运行本周实验' }}
+          {{ isRunning ? '正在运行…' : currentDayConfig.action }}
         </button>
       </section>
 
       <aside class="task-panel">
-        <h2>本实验主任务</h2>
+        <h2>本日任务</h2>
+        <p>{{ currentDayConfig.goal }}</p>
+        <h3>本周主任务</h3>
         <p>{{ lab.practice }}</p>
         <h3>对应课程</h3>
-        <p>{{ lab.lessonPath }}</p>
+        <p>{{ currentLessonPath }}</p>
         <h3>交付物</h3>
         <p>{{ lab.deliverable }}</p>
         <h3>使用方式</h3>
         <ol>
-          <li>先使用默认输入运行一次。</li>
-          <li>只修改一个变量再次运行。</li>
-          <li>记录 Trace 与结果变化。</li>
-          <li>将结论写入对应周复盘。</li>
+          <li v-for="step in currentDayConfig.steps" :key="step">
+            {{ step }}
+          </li>
         </ol>
       </aside>
     </div>
@@ -648,6 +718,29 @@ h1 {
   color: #59647a;
   background: #fff;
   font-size: 13px;
+}
+
+.day-tabs {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 10px;
+}
+
+.day-tabs a {
+  padding: 9px 12px;
+  border: 1px solid #dfe4f0;
+  border-radius: 999px;
+  color: #59647a;
+  background: #fff;
+  text-decoration: none;
+  font-size: 13px;
+  font-weight: 800;
+}
+
+.day-tabs a.active {
+  border-color: #5365d8;
+  color: #fff;
+  background: #5365d8;
 }
 
 .workbench {

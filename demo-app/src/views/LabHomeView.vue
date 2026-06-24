@@ -5,6 +5,13 @@ import { labs } from '@/labs/registry'
 
 const search = ref('')
 const selectedModule = ref('全部')
+const dayLabels = [
+  ['01', '概念'],
+  ['02', '架构'],
+  ['03', '动手'],
+  ['04', '评测'],
+  ['05', '验收'],
+]
 
 const modules = computed(() => [
   '全部',
@@ -25,6 +32,12 @@ const filteredLabs = computed(() => {
     return matchesModule && matchesKeyword
   })
 })
+
+function getDayPath(lab: { id: string; week?: string }, day: string) {
+  return lab.id === 'W02'
+    ? `/labs/week-${lab.week}/day-${day}`
+    : `/labs/${lab.id}/day-${day}`
+}
 </script>
 
 <template>
@@ -74,6 +87,16 @@ const filteredLabs = computed(() => {
         <ul class="topic-list">
           <li v-for="topic in lab.topics" :key="topic">{{ topic }}</li>
         </ul>
+
+        <div v-if="lab.week && lab.mode !== 'custom'" class="day-link-list">
+          <RouterLink
+            v-for="[day, label] in dayLabels"
+            :key="day"
+            :to="getDayPath(lab, day)"
+          >
+            D{{ day }} {{ label }}
+          </RouterLink>
+        </div>
 
         <RouterLink
           v-if="lab.status === 'available'"
@@ -125,6 +148,24 @@ const filteredLabs = computed(() => {
   font-family:
     ui-monospace, SFMono-Regular, Menlo, Monaco, Consolas, 'Liberation Mono',
     monospace;
+}
+
+.day-link-list {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 8px;
+  margin: 16px 0 4px;
+}
+
+.day-link-list a {
+  padding: 6px 9px;
+  border: 1px solid #dfe4f0;
+  border-radius: 999px;
+  color: #5265d8;
+  background: #f8f9ff;
+  text-decoration: none;
+  font-size: 12px;
+  font-weight: 800;
 }
 
 @media (max-width: 640px) {

@@ -4,10 +4,30 @@ import type { LabDefinition } from './registry'
 // 修改全年课程数据后，运行 npm run curriculum:generate。
 export const generatedLabs: LabDefinition[] = [
   {
+    "id": "W02",
+    "title": "真实模型 API 与调用边界",
+    "description": "完成 DeepSeek V4 Flash 的真实调用与 Mock 对照",
+    "path": "/labs/week-02/day-03",
+    "status": "available",
+    "topics": [
+      "messages 消息结构",
+      "API Key 与服务端环境变量",
+      "超时、错误码与重试",
+      "Token 用量"
+    ],
+    "module": "模型基础",
+    "mode": "model",
+    "week": "02",
+    "day": "03",
+    "practice": "完成 DeepSeek V4 Flash 的真实调用与 Mock 对照",
+    "deliverable": "一份真实调用记录、错误分类和成本观察",
+    "lessonPath": "/lessons/week-02/day-03.md"
+  },
+  {
     "id": "03",
     "title": "上下文、Token 与对话记忆",
     "description": "给职场助手增加多轮上下文，并观察上下文过长的影响",
-    "path": "/labs/03",
+    "path": "/labs/03/day-03",
     "status": "available",
     "topics": [
       "Token 与上下文窗口",
@@ -27,7 +47,7 @@ export const generatedLabs: LabDefinition[] = [
     "id": "04",
     "title": "流式输出与生成体验",
     "description": "在统一 Demo 中实现服务端到 Vue 的流式输出",
-    "path": "/labs/04",
+    "path": "/labs/04/day-03",
     "status": "available",
     "topics": [
       "SSE 与流式响应",
@@ -47,7 +67,7 @@ export const generatedLabs: LabDefinition[] = [
     "id": "05",
     "title": "Prompt 的基本结构",
     "description": "把职场助手 Prompt 拆成可维护模块",
-    "path": "/labs/05",
+    "path": "/labs/05/day-03",
     "status": "available",
     "topics": [
       "角色与任务",
@@ -67,7 +87,7 @@ export const generatedLabs: LabDefinition[] = [
     "id": "06",
     "title": "Zero-shot、Few-shot 与示例设计",
     "description": "为三种沟通场景设计最少必要示例",
-    "path": "/labs/06",
+    "path": "/labs/06/day-03",
     "status": "available",
     "topics": [
       "Zero-shot",
@@ -87,7 +107,7 @@ export const generatedLabs: LabDefinition[] = [
     "id": "07",
     "title": "Prompt 变量与模板管理",
     "description": "建立 Prompt Registry，并按 taskType 选择模板",
-    "path": "/labs/07",
+    "path": "/labs/07/day-03",
     "status": "available",
     "topics": [
       "模板变量",
@@ -107,7 +127,7 @@ export const generatedLabs: LabDefinition[] = [
     "id": "08",
     "title": "Prompt 注入与指令边界",
     "description": "构造注入测试并加固职场助手",
-    "path": "/labs/08",
+    "path": "/labs/08/day-03",
     "status": "available",
     "topics": [
       "指令优先级",
@@ -127,7 +147,7 @@ export const generatedLabs: LabDefinition[] = [
     "id": "09",
     "title": "从感觉到评测集",
     "description": "为职场助手建立第一版评测集",
-    "path": "/labs/09",
+    "path": "/labs/09/day-03",
     "status": "available",
     "topics": [
       "测试样本设计",
@@ -147,7 +167,7 @@ export const generatedLabs: LabDefinition[] = [
     "id": "10",
     "title": "结构化输出与 JSON Schema",
     "description": "让模型稳定返回业务对象",
-    "path": "/labs/10",
+    "path": "/labs/10/day-03",
     "status": "available",
     "topics": [
       "JSON Output",
@@ -167,7 +187,7 @@ export const generatedLabs: LabDefinition[] = [
     "id": "11",
     "title": "运行时校验与自动修复",
     "description": "增加模型结果验证器和一次修复流程",
-    "path": "/labs/11",
+    "path": "/labs/11/day-03",
     "status": "available",
     "topics": [
       "类型校验",
@@ -187,7 +207,7 @@ export const generatedLabs: LabDefinition[] = [
     "id": "12",
     "title": "项目一 MVP 与季度验收",
     "description": "完成 AI 职场沟通助手 MVP",
-    "path": "/labs/12",
+    "path": "/labs/12/day-03",
     "status": "available",
     "topics": [
       "MVP 边界",
@@ -207,7 +227,7 @@ export const generatedLabs: LabDefinition[] = [
     "id": "13",
     "title": "Function Calling 入门",
     "description": "实现天气或日期类只读工具",
-    "path": "/labs/13",
+    "path": "/labs/13/day-03",
     "status": "available",
     "topics": [
       "工具定义",
@@ -227,7 +247,7 @@ export const generatedLabs: LabDefinition[] = [
     "id": "14",
     "title": "工具参数校验与错误处理",
     "description": "让错误参数无法进入真实工具",
-    "path": "/labs/14",
+    "path": "/labs/14/day-03",
     "status": "available",
     "topics": [
       "参数可信边界",
@@ -247,7 +267,7 @@ export const generatedLabs: LabDefinition[] = [
     "id": "15",
     "title": "读操作与写操作的权限差异",
     "description": "设计查询和提交两类工具的权限流程",
-    "path": "/labs/15",
+    "path": "/labs/15/day-03",
     "status": "available",
     "topics": [
       "只读工具",
@@ -267,7 +287,7 @@ export const generatedLabs: LabDefinition[] = [
     "id": "16",
     "title": "工具结果、幂等与重试",
     "description": "模拟重复提交并阻止二次副作用",
-    "path": "/labs/16",
+    "path": "/labs/16/day-03",
     "status": "available",
     "topics": [
       "幂等键",
@@ -287,7 +307,7 @@ export const generatedLabs: LabDefinition[] = [
     "id": "17",
     "title": "Workflow 与 Agent 的区别",
     "description": "把同一需求分别实现成 Workflow 和 Agent 方案",
-    "path": "/labs/17",
+    "path": "/labs/17/day-03",
     "status": "available",
     "topics": [
       "固定工作流",
@@ -307,7 +327,7 @@ export const generatedLabs: LabDefinition[] = [
     "id": "18",
     "title": "任务拆解与状态管理",
     "description": "实现一个可观察的多步骤任务流程",
-    "path": "/labs/18",
+    "path": "/labs/18/day-03",
     "status": "available",
     "topics": [
       "Plan",
@@ -327,7 +347,7 @@ export const generatedLabs: LabDefinition[] = [
     "id": "19",
     "title": "Agent 循环与终止条件",
     "description": "实现带最大步数的简单 Agent Loop",
-    "path": "/labs/19",
+    "path": "/labs/19/day-03",
     "status": "available",
     "topics": [
       "观察-行动循环",
@@ -347,7 +367,7 @@ export const generatedLabs: LabDefinition[] = [
     "id": "20",
     "title": "Agent 记忆与上下文压缩",
     "description": "为任务 Agent 增加可控记忆",
-    "path": "/labs/20",
+    "path": "/labs/20/day-03",
     "status": "available",
     "topics": [
       "工作记忆",
@@ -367,7 +387,7 @@ export const generatedLabs: LabDefinition[] = [
     "id": "21",
     "title": "Agent 可观测性与评测",
     "description": "记录一次 Agent 的完整执行轨迹",
-    "path": "/labs/21",
+    "path": "/labs/21/day-03",
     "status": "available",
     "topics": [
       "Trace",
@@ -387,7 +407,7 @@ export const generatedLabs: LabDefinition[] = [
     "id": "22",
     "title": "MCP 核心概念",
     "description": "使用一个现有 MCP Server 并观察协议边界",
-    "path": "/labs/22",
+    "path": "/labs/22/day-03",
     "status": "available",
     "topics": [
       "Client 与 Server",
@@ -407,7 +427,7 @@ export const generatedLabs: LabDefinition[] = [
     "id": "23",
     "title": "编写最小 MCP Server",
     "description": "把一个本地只读能力封装为 MCP 工具",
-    "path": "/labs/23",
+    "path": "/labs/23/day-03",
     "status": "available",
     "topics": [
       "Server 生命周期",
@@ -427,7 +447,7 @@ export const generatedLabs: LabDefinition[] = [
     "id": "24",
     "title": "MCP 综合验收",
     "description": "将明确契约的业务能力接入 MCP",
-    "path": "/labs/24",
+    "path": "/labs/24/day-03",
     "status": "available",
     "topics": [
       "业务接口封装",
@@ -447,7 +467,7 @@ export const generatedLabs: LabDefinition[] = [
     "id": "25",
     "title": "RAG 为什么存在",
     "description": "构建最小“检索后回答”链路",
-    "path": "/labs/25",
+    "path": "/labs/25/day-03",
     "status": "available",
     "topics": [
       "模型知识边界",
@@ -467,7 +487,7 @@ export const generatedLabs: LabDefinition[] = [
     "id": "26",
     "title": "文档解析与数据清洗",
     "description": "解析一组接口文档并保留来源信息",
-    "path": "/labs/26",
+    "path": "/labs/26/day-03",
     "status": "available",
     "topics": [
       "文档格式",
@@ -487,7 +507,7 @@ export const generatedLabs: LabDefinition[] = [
     "id": "27",
     "title": "Chunk 切分策略",
     "description": "比较三种 Chunk 方案对接口文档的影响",
-    "path": "/labs/27",
+    "path": "/labs/27/day-03",
     "status": "available",
     "topics": [
       "固定长度",
@@ -507,7 +527,7 @@ export const generatedLabs: LabDefinition[] = [
     "id": "28",
     "title": "Embedding 与向量检索",
     "description": "完成文本入库和相似度查询",
-    "path": "/labs/28",
+    "path": "/labs/28/day-03",
     "status": "available",
     "topics": [
       "向量表示",
@@ -527,7 +547,7 @@ export const generatedLabs: LabDefinition[] = [
     "id": "29",
     "title": "关键词与混合检索",
     "description": "让字段名精确检索与语义检索协作",
-    "path": "/labs/29",
+    "path": "/labs/29/day-03",
     "status": "available",
     "topics": [
       "BM25",
@@ -547,7 +567,7 @@ export const generatedLabs: LabDefinition[] = [
     "id": "30",
     "title": "Metadata Filter",
     "description": "按系统、版本和文档类型过滤召回结果",
-    "path": "/labs/30",
+    "path": "/labs/30/day-03",
     "status": "available",
     "topics": [
       "来源过滤",
@@ -567,7 +587,7 @@ export const generatedLabs: LabDefinition[] = [
     "id": "31",
     "title": "Query Rewrite 与多路召回",
     "description": "处理用户口语与接口字段名不一致的问题",
-    "path": "/labs/31",
+    "path": "/labs/31/day-03",
     "status": "available",
     "topics": [
       "查询改写",
@@ -587,7 +607,7 @@ export const generatedLabs: LabDefinition[] = [
     "id": "32",
     "title": "Rerank 与上下文选择",
     "description": "对候选文档重排并控制上下文长度",
-    "path": "/labs/32",
+    "path": "/labs/32/day-03",
     "status": "available",
     "topics": [
       "初召回",
@@ -607,7 +627,7 @@ export const generatedLabs: LabDefinition[] = [
     "id": "33",
     "title": "引用、拒答与可信回答",
     "description": "回答必须展示来源，缺少证据时拒答",
-    "path": "/labs/33",
+    "path": "/labs/33/day-03",
     "status": "available",
     "topics": [
       "引用定位",
@@ -627,7 +647,7 @@ export const generatedLabs: LabDefinition[] = [
     "id": "34",
     "title": "RAG 评测集",
     "description": "建立接口契约助手评测集",
-    "path": "/labs/34",
+    "path": "/labs/34/day-03",
     "status": "available",
     "topics": [
       "检索命中率",
@@ -647,7 +667,7 @@ export const generatedLabs: LabDefinition[] = [
     "id": "35",
     "title": "RAG 失败分析与优化",
     "description": "逐条归因失败样本并只修改一个变量",
-    "path": "/labs/35",
+    "path": "/labs/35/day-03",
     "status": "available",
     "topics": [
       "召回失败",
@@ -667,7 +687,7 @@ export const generatedLabs: LabDefinition[] = [
     "id": "36",
     "title": "项目二综合验收",
     "description": "完成 AI 接口契约与需求助手",
-    "path": "/labs/36",
+    "path": "/labs/36/day-03",
     "status": "available",
     "topics": [
       "接口字段契约",
@@ -687,7 +707,7 @@ export const generatedLabs: LabDefinition[] = [
     "id": "37",
     "title": "AI 产品问题定义",
     "description": "从三个候选方向中选择真实问题",
-    "path": "/labs/37",
+    "path": "/labs/37/day-03",
     "status": "available",
     "topics": [
       "目标用户",
@@ -707,7 +727,7 @@ export const generatedLabs: LabDefinition[] = [
     "id": "38",
     "title": "用户访谈与需求证据",
     "description": "完成三到五次轻量用户访谈",
-    "path": "/labs/38",
+    "path": "/labs/38/day-03",
     "status": "available",
     "topics": [
       "访谈提纲",
@@ -727,7 +747,7 @@ export const generatedLabs: LabDefinition[] = [
     "id": "39",
     "title": "AI 产品指标体系",
     "description": "为睡眠教练定义指标树",
-    "path": "/labs/39",
+    "path": "/labs/39/day-03",
     "status": "available",
     "topics": [
       "产品指标",
@@ -747,7 +767,7 @@ export const generatedLabs: LabDefinition[] = [
     "id": "40",
     "title": "安全、隐私与高风险边界",
     "description": "设计睡眠或情绪产品安全边界",
-    "path": "/labs/40",
+    "path": "/labs/40/day-03",
     "status": "available",
     "topics": [
       "敏感数据",
@@ -767,7 +787,7 @@ export const generatedLabs: LabDefinition[] = [
     "id": "41",
     "title": "睡眠教练数据与 Prompt 设计",
     "description": "设计睡眠教练的数据结构和 Prompt",
-    "path": "/labs/41",
+    "path": "/labs/41/day-03",
     "status": "available",
     "topics": [
       "睡眠日志",
@@ -787,7 +807,7 @@ export const generatedLabs: LabDefinition[] = [
     "id": "42",
     "title": "睡眠教练 MVP 开发",
     "description": "完成睡眠教练核心闭环",
-    "path": "/labs/42",
+    "path": "/labs/42/day-03",
     "status": "available",
     "topics": [
       "日志录入",
@@ -807,7 +827,7 @@ export const generatedLabs: LabDefinition[] = [
     "id": "43",
     "title": "周总结与个性化",
     "description": "根据七天记录生成周总结",
-    "path": "/labs/43",
+    "path": "/labs/43/day-03",
     "status": "available",
     "topics": [
       "趋势提取",
@@ -827,7 +847,7 @@ export const generatedLabs: LabDefinition[] = [
     "id": "44",
     "title": "真实用户测试与迭代",
     "description": "邀请测试用户完成核心任务",
-    "path": "/labs/44",
+    "path": "/labs/44/day-03",
     "status": "available",
     "topics": [
       "可用性测试",
@@ -847,7 +867,7 @@ export const generatedLabs: LabDefinition[] = [
     "id": "45",
     "title": "部署、监控与成本",
     "description": "部署一个正式项目并建立基础监控",
-    "path": "/labs/45",
+    "path": "/labs/45/day-03",
     "status": "available",
     "topics": [
       "环境配置",
@@ -867,7 +887,7 @@ export const generatedLabs: LabDefinition[] = [
     "id": "46",
     "title": "作品集：讲清技术与产品",
     "description": "整理两个核心项目作品集",
-    "path": "/labs/46",
+    "path": "/labs/46/day-03",
     "status": "available",
     "topics": [
       "项目叙事",
@@ -887,7 +907,7 @@ export const generatedLabs: LabDefinition[] = [
     "id": "47",
     "title": "简历与面试表达",
     "description": "形成三分钟项目介绍并模拟问答",
-    "path": "/labs/47",
+    "path": "/labs/47/day-03",
     "status": "available",
     "topics": [
       "能力定位",
@@ -907,7 +927,7 @@ export const generatedLabs: LabDefinition[] = [
     "id": "48",
     "title": "年度毕业验收与下一阶段",
     "description": "完成年度答辩和能力矩阵",
-    "path": "/labs/48",
+    "path": "/labs/48/day-03",
     "status": "available",
     "topics": [
       "能力盘点",
