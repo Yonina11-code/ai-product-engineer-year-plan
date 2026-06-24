@@ -1,5 +1,7 @@
 import { createRouter, createWebHistory } from 'vue-router'
 import LabHomeView from '@/views/LabHomeView.vue'
+import AdvancedHomeView from '@/advanced-labs/AdvancedHomeView.vue'
+import { advancedLabRoutes } from '@/advanced-labs/generated-advanced-routes'
 import AiAppChainView from '@/labs/01-ai-app-chain/AiAppChainView.vue'
 import ModelUncertaintyView from '@/labs/02-model-uncertainty/ModelUncertaintyView.vue'
 import CurriculumLabView from '@/labs/03-48-curriculum/CurriculumLabView.vue'
@@ -10,6 +12,17 @@ const router = createRouter({
     {
       path: '/',
       name: 'home',
+      component: AdvancedHomeView,
+    },
+    {
+      path: '/advanced',
+      name: 'advanced-home',
+      component: AdvancedHomeView,
+    },
+    ...advancedLabRoutes,
+    {
+      path: '/legacy-labs',
+      name: 'legacy-home',
       component: LabHomeView,
     },
     {

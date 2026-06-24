@@ -482,6 +482,23 @@ ${weeks
 `
 }
 
+function getDemoMode(item) {
+  const text = `${item.phase} ${item.title}`
+  if (text.includes('Gateway')) return 'gateway'
+  if (text.includes('Streaming')) return 'streaming'
+  if (text.includes('Schema') || text.includes('结构化')) return 'schema'
+  if (text.includes('Prompt Registry')) return 'prompt-registry'
+  if (text.includes('评测')) return 'eval'
+  if (text.includes('RAG') || text.includes('Embedding') || text.includes('Chunk') || text.includes('引用')) return 'rag'
+  if (text.includes('Tool Calling')) return 'tool'
+  if (text.includes('Agent') || text.includes('Workflow')) return 'agent'
+  if (text.includes('MCP')) return 'mcp'
+  if (text.includes('可观测')) return 'observability'
+  if (text.includes('安全') || text.includes('睡眠') || text.includes('情绪')) return 'product'
+  if (text.includes('作品集') || text.includes('面试') || text.includes('简历') || text.includes('答辩')) return 'portfolio'
+  return 'engineering'
+}
+
 ensureDir(trackRoot)
 ensureDir(weeksRoot)
 ensureDir(lessonsRoot)
@@ -503,4 +520,79 @@ for (const item of weeks) {
 
 fs.writeFileSync(path.join(trackRoot, 'README.md'), makeIndex())
 
-console.log(`Generated advanced job track: ${weeks.length} weeks, ${weeks.length * dayPlan.length} daily lessons.`)
+const advancedLabs = weeks.flatMap((item) => {
+  const number = weekNumber(item.week)
+  return dayPlan.map(([day, dayTitle, dayGoal]) => ({
+    id: `W${number}D${day}`,
+    week: number,
+    day,
+    title: item.title,
+    dayTitle,
+    dayGoal,
+    phase: item.phase,
+    path: `/advanced/week-${number}/day-${day}`,
+    lessonPath: `/advanced-track/lessons/week-${number}/day-${day}.md`,
+    reviewPath: `/advanced-track/reviews/week-${number}.md`,
+    mode: getDemoMode(item),
+    build: item.build,
+    skills: item.skills,
+    proof: item.proof,
+    interview: item.interview,
+  }))
+})
+
+const advancedLabsRoot = path.join(root, 'demo-app', 'src', 'advanced-labs')
+ensureDir(advancedLabsRoot)
+fs.writeFileSync(
+  path.join(advancedLabsRoot, 'generated-advanced-labs.ts'),
+  `import type { AdvancedLabDefinition } from './registry'
+
+// 本文件由 scripts/generate-advanced-job-track.mjs 生成。
+// 修改高级轨道后，运行 npm run advanced:generate。
+export const generatedAdvancedLabs: AdvancedLabDefinition[] = ${JSON.stringify(advancedLabs, null, 2)}
+`,
+)
+
+const advancedDaysRoot = path.join(advancedLabsRoot, 'days')
+ensureDir(advancedDaysRoot)
+
+for (const lab of advancedLabs) {
+  const weekDir = path.join(advancedDaysRoot, `week-${lab.week}`)
+  ensureDir(weekDir)
+  fs.writeFileSync(
+    path.join(weekDir, `day-${lab.day}.vue`),
+    `<script setup lang="ts">
+import AdvancedLabWorkbench from '../../shared/AdvancedLabWorkbench.vue'
+import type { AdvancedLabDefinition } from '../../registry'
+
+const lab: AdvancedLabDefinition = ${JSON.stringify(lab, null, 2)}
+</script>
+
+<template>
+  <AdvancedLabWorkbench :lab="lab" />
+</template>
+`,
+  )
+}
+
+const routesSource = `// 本文件由 scripts/generate-advanced-job-track.mjs 生成。
+// 每一天都有独立 Vue 文件；修改课程后运行 npm run advanced:generate。
+export const advancedLabRoutes = [
+${advancedLabs
+  .map(
+    (lab) => `  {
+    path: '${lab.path}',
+    name: 'advanced-${lab.id.toLowerCase()}',
+    component: () => import('./days/week-${lab.week}/day-${lab.day}.vue'),
+  },`,
+  )
+  .join('\n')}
+]
+`
+
+fs.writeFileSync(
+  path.join(advancedLabsRoot, 'generated-advanced-routes.ts'),
+  routesSource,
+)
+
+console.log(`Generated advanced job track: ${weeks.length} weeks, ${weeks.length * dayPlan.length} daily lessons, ${advancedLabs.length} demo entries.`)

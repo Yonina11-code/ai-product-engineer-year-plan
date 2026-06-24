@@ -33,6 +33,12 @@ AI 应用工程底座
 
 [W01 Day01：架构判断](./advanced-track/lessons/week-01/day-01.md)
 
+对应 Demo：
+
+```text
+http://127.0.0.1:5180/advanced/week-01/day-01
+```
+
 ## 每天时间
 
 仍然按你说的来：

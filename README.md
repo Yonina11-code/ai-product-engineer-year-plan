@@ -50,6 +50,18 @@ npm run demo:check
 npm run advanced:generate
 ```
 
+Demo 默认入口：
+
+```text
+http://127.0.0.1:5180/
+```
+
+旧入门 Demo 保留在：
+
+```text
+http://127.0.0.1:5180/legacy-labs
+```
+
 ## 协作规则
 
 以后课程默认按你的经验水平处理：

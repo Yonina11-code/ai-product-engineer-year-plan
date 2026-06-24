@@ -32,15 +32,40 @@ textarea {
   backdrop-filter: blur(12px);
 }
 
-.brand {
-  display: flex;
+.app-header {
+  display: block;
+}
+
+.app-header > .brand,
+.app-nav {
   width: min(1120px, calc(100% - 32px));
   margin: 0 auto;
+}
+
+.brand {
+  display: flex;
   padding: 16px 0;
   align-items: center;
   gap: 12px;
   color: #172033;
   text-decoration: none;
+}
+
+.app-nav {
+  display: flex;
+  gap: 16px;
+  padding: 0 0 14px 54px;
+}
+
+.app-nav a {
+  color: #657086;
+  text-decoration: none;
+  font-size: 14px;
+  font-weight: 800;
+}
+
+.app-nav a.router-link-active {
+  color: #5265d8;
 }
 
 .brand-mark {
