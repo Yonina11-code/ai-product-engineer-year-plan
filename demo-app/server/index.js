@@ -26,7 +26,8 @@ async function readJsonBody(request) {
 }
 
 const server = http.createServer(async (request, response) => {
-  const advancedHandler = advancedApiRoutes.get(request.url)
+  const requestPath = new URL(request.url, 'http://127.0.0.1').pathname
+  const advancedHandler = advancedApiRoutes.get(requestPath)
 
   if (request.method === 'POST' && advancedHandler) {
     await advancedHandler({
@@ -37,7 +38,7 @@ const server = http.createServer(async (request, response) => {
     return
   }
 
-  if (request.method === 'POST' && request.url === '/api/ai/chat') {
+  if (request.method === 'POST' && requestPath === '/api/ai/chat') {
     await handleAiChat({
       response,
       readJsonBody: () => readJsonBody(request),
@@ -48,7 +49,7 @@ const server = http.createServer(async (request, response) => {
 
   if (
     request.method === 'POST' &&
-    request.url === '/api/labs/01/rewrite'
+    requestPath === '/api/labs/01/rewrite'
   ) {
     await handleLab01Rewrite({
       request,
@@ -61,7 +62,7 @@ const server = http.createServer(async (request, response) => {
 
   if (
     request.method === 'POST' &&
-    request.url === '/api/labs/02/generate'
+    requestPath === '/api/labs/02/generate'
   ) {
     await handleLab02Generate({
       request,
@@ -72,14 +73,14 @@ const server = http.createServer(async (request, response) => {
     return
   }
 
-  if (request.method === 'GET' && request.url === '/api/health') {
+  if (request.method === 'GET' && requestPath === '/api/health') {
     sendJson(response, 200, {
       status: 'ok',
     })
     return
   }
 
-  if (request.method === 'GET' && request.url === '/api/providers/deepseek') {
+  if (request.method === 'GET' && requestPath === '/api/providers/deepseek') {
     sendJson(response, 200, getDeepSeekStatus())
     return
   }

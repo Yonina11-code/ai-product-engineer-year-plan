@@ -9,7 +9,7 @@
     "curriculum:generate": "node scripts/generate-full-curriculum.mjs",
     "advanced:generate": "node scripts/generate-advanced-job-track.mjs",
     "demo": "concurrently -k -n server,web -c yellow,cyan \"npm:demo:server\" \"npm:demo:web\"",
-    "demo:server": "node --env-file-if-exists=.env demo-app/server/index.js",
+    "demo:server": "node --watch --env-file-if-exists=.env demo-app/server/index.js",
     "demo:web": "vite --config demo-app/vite.config.ts",
     "demo:check": "vue-tsc --noEmit -p demo-app/tsconfig.app.json"
   },
