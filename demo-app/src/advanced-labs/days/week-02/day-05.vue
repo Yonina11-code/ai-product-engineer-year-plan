@@ -6,27 +6,28 @@ const lab: AdvancedLabDefinition = {
   "id": "W02D05",
   "week": "02",
   "day": "05",
-  "title": "Streaming、取消生成与体验状态机",
+  "title": "Streaming：AI 响应慢时前端体验怎么做",
   "dayTitle": "作品集与面试表达",
-  "dayGoal": "沉淀架构图、代码证据、指标和三分钟讲法。",
-  "phase": "AI 应用工程底座",
+  "dayGoal": "整理架构图、关键代码、日志、评测结果和一段能被面试追问的讲法。",
+  "phase": "阶段 1：AI 应用工程底座",
   "path": "/advanced/week-02/day-05",
   "lessonPath": "/advanced-track/lessons/week-02/day-05.md",
   "reviewPath": "/advanced-track/reviews/week-02.md",
   "mode": "streaming",
-  "build": "实现 SSE 流式输出、取消生成、重新生成和前端状态机。",
+  "build": "把上周 Gateway 扩展成流式输出：服务端通过 SSE 返回 token，前端实现 streaming / cancelled / failed / done 状态机。",
   "skills": [
     "SSE",
-    "AbortController",
-    "首字延迟",
-    "加载/取消/失败状态"
+    "流式输出",
+    "取消生成",
+    "前端状态机",
+    "首字延迟"
   ],
   "proof": [
-    "流式输出 Demo",
-    "取消生成截图",
-    "状态机说明"
+    "流式输出录屏或截图",
+    "取消生成的 Network / 日志证据",
+    "状态机图：idle -> streaming -> done / cancelled / failed"
   ],
-  "interview": "讲清 AI 响应慢时，前端怎样设计体验，而不是只加 loading。"
+  "interview": "AI 慢不是只加 loading，我会用流式输出降低感知等待，并用状态机保证取消、重试和失败恢复可控。"
 }
 </script>
 

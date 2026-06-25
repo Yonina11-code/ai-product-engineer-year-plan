@@ -1,8 +1,8 @@
 # 当前学习看板
 
 开始日期：2026-06-22  
-当前主线：高级求职向 AI Engineer Track  
-当前课程：[W01：真实模型 Gateway 与调用边界](./advanced-track/weeks/week-01.md)
+当前主线：前端老手转 AI 应用工程实战 Track  
+当前课程：[W01：AI Gateway：前端如何安全接入真实模型](./advanced-track/weeks/week-01.md)
 
 首次学习入口：[从这里开始](./START-HERE.md)
 
@@ -15,24 +15,25 @@
 - [ ] 阶段 1：AI 应用工程底座
 - [ ] 阶段 2：RAG 工程
 - [ ] 阶段 3：Tool / Agent / MCP
-- [ ] 阶段 4：产品化、上线与求职
+- [ ] 阶段 4：AI 产品边界与安全
+- [ ] 阶段 5：上线、作品集与求职
 
 ## 项目证据
 
-- [ ] AI Gateway / 模型调用工程底座
-- [ ] 结构化输出 + 评测闭环
+- [ ] AI Gateway / Streaming / 结构化输出工程底座
+- [ ] AI 职场沟通助手工程化项目
 - [ ] 前端接口契约 RAG 助手
-- [ ] Tool / Agent / MCP 综合 Demo
+- [ ] MCP + RAG + Tool + 受限 Agent 综合 Demo
 - [ ] AI 睡眠或情绪教练 MVP
 - [ ] 作品集、简历项目描述和面试问答
 
 ## 当前周任务
 
-- [ ] W01 Day01：画出 AI Gateway 边界
-- [ ] W01 Day02：实现最小 Provider 切换
-- [ ] W01 Day03：补超时、错误分类和日志
-- [ ] W01 Day04：构造失败样本并记录证据
-- [ ] W01 Day05：整理成面试可讲的项目材料
+- [ ] W01 Day01：判断真实场景与 AI Gateway 边界
+- [ ] W01 Day02：跑通前端 -> 服务端 -> mock / DeepSeek 最小链路
+- [ ] W01 Day03：补 Provider 抽象、超时和错误分类
+- [ ] W01 Day04：构造无 Key、超时、Provider 错误三类失败证据
+- [ ] W01 Day05：整理 AI Gateway 架构图和面试讲法
 
 ## 当前停止规则
 

@@ -1,4 +1,4 @@
-# W18 复盘：可观测性：日志、Token、成本、延迟与质量
+# W18 复盘：项目四：AI 睡眠 / 情绪教练 MVP
 
 ## 本周投入时间
 
@@ -6,19 +6,36 @@
 
 ## 本周完成的工程证据
 
-- [ ] 监控面板或日志表
-- [ ] 成本记录
-- [ ] 一次故障归因
+- [ ] 可演示 MVP
+- [ ] 10 条用户反馈样本
+- [ ] 安全与失败测试报告
+
+## 本周补齐的后端基础
+
+- [ ] 用户上下文组装
+- [ ] 历史摘要
+- [ ] 反馈数据
+- [ ] 安全分类
+- [ ] 上线前验收
 
 ## 核心架构图
 
 ```mermaid
 flowchart LR
-  A["User / UI"] --> B["Server Boundary"]
-  B --> C["AI Capability"]
-  C --> D["Validation / Eval"]
+  A["User / Vue UI"] --> B["Your Server API"]
+  B --> C["AI / RAG / Tool Layer"]
+  C --> D["Validation / Safety / Eval"]
   D --> E["User-visible Result"]
+  B --> F["Logs / Trace / Cost"]
 ```
+
+## 成功链路
+
+- 输入：
+- 服务端处理：
+- AI / 数据层处理：
+- 输出：
+- 证据：
 
 ## 失败案例
 

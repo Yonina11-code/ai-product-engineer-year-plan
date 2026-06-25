@@ -1,4 +1,4 @@
-# W09 复盘：Query Rewrite、Rerank 与上下文选择
+# W09 复盘：可信回答：引用、拒答与冲突证据
 
 ## 本周投入时间
 
@@ -6,19 +6,36 @@
 
 ## 本周完成的工程证据
 
-- [ ] 改写前后召回对比
-- [ ] Rerank Trace
-- [ ] 上下文裁剪规则
+- [ ] 有引用回答案例
+- [ ] 拒答案例
+- [ ] 冲突证据案例
+
+## 本周补齐的后端基础
+
+- [ ] 上下文拼装
+- [ ] 引用结构
+- [ ] 拒答规则
+- [ ] 冲突检测
+- [ ] 答案后校验
 
 ## 核心架构图
 
 ```mermaid
 flowchart LR
-  A["User / UI"] --> B["Server Boundary"]
-  B --> C["AI Capability"]
-  C --> D["Validation / Eval"]
+  A["User / Vue UI"] --> B["Your Server API"]
+  B --> C["AI / RAG / Tool Layer"]
+  C --> D["Validation / Safety / Eval"]
   D --> E["User-visible Result"]
+  B --> F["Logs / Trace / Cost"]
 ```
+
+## 成功链路
+
+- 输入：
+- 服务端处理：
+- AI / 数据层处理：
+- 输出：
+- 证据：
 
 ## 失败案例
 

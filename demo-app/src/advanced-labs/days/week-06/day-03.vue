@@ -6,27 +6,28 @@ const lab: AdvancedLabDefinition = {
   "id": "W06D03",
   "week": "06",
   "day": "03",
-  "title": "项目一：AI 职场沟通助手工程化重做",
-  "dayTitle": "可靠性增强",
-  "dayGoal": "补错误处理、结构校验、边界条件和可观测信息。",
-  "phase": "项目一",
+  "title": "项目一：AI 职场沟通助手工程化版本",
+  "dayTitle": "后端补点与可靠性",
+  "dayGoal": "补上这周必须懂的后端基础，并处理超时、校验、权限、日志或失败兜底。",
+  "phase": "阶段 1 项目验收",
   "path": "/advanced/week-06/day-03",
   "lessonPath": "/advanced-track/lessons/week-06/day-03.md",
   "reviewPath": "/advanced-track/reviews/week-06.md",
   "mode": "engineering",
-  "build": "完成职场沟通助手 MVP：真实模型、结构化输出、评测集、复制结果、失败降级。",
+  "build": "完成职场沟通助手 MVP：真实模型、结构化输出、Prompt Registry、评测集、日志、复制结果、失败降级。",
   "skills": [
     "端到端闭环",
-    "真实用户输入",
-    "可复制输出",
-    "失败兜底"
+    "产品交互",
+    "评测证据",
+    "失败兜底",
+    "项目表达"
   ],
   "proof": [
-    "在线或本地演示",
+    "可演示项目",
     "30 条评测结果",
-    "成本和延迟记录"
+    "项目 README 与架构图"
   ],
-  "interview": "把这个项目讲成“我如何把不稳定模型变成可用产品功能”。"
+  "interview": "我做的是一个可上线雏形：前端体验、服务端 Gateway、结构化校验、Prompt 版本、评测和日志都有闭环。"
 }
 </script>
 

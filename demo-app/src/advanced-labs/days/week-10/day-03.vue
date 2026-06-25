@@ -6,27 +6,28 @@ const lab: AdvancedLabDefinition = {
   "id": "W10D03",
   "week": "10",
   "day": "03",
-  "title": "引用、拒答与可信回答",
-  "dayTitle": "可靠性增强",
-  "dayGoal": "补错误处理、结构校验、边界条件和可观测信息。",
-  "phase": "RAG 工程",
+  "title": "RAG 评测：把“效果还行”变成指标",
+  "dayTitle": "后端补点与可靠性",
+  "dayGoal": "补上这周必须懂的后端基础，并处理超时、校验、权限、日志或失败兜底。",
+  "phase": "阶段 2：RAG 工程",
   "path": "/advanced/week-10/day-03",
   "lessonPath": "/advanced-track/lessons/week-10/day-03.md",
   "reviewPath": "/advanced-track/reviews/week-10.md",
-  "mode": "rag",
-  "build": "让回答必须带来源引用；证据不足时拒答；冲突证据时提示不确定。",
+  "mode": "eval",
+  "build": "准备 50 条接口契约问答评测，区分检索失败、引用错误、生成错误、资料缺失和应该拒答。",
   "skills": [
-    "Grounded Answer",
-    "Citation",
-    "Refusal",
-    "冲突证据处理"
+    "Retrieval Eval",
+    "Answer Eval",
+    "Citation Eval",
+    "Failure Taxonomy",
+    "回归指标"
   ],
   "proof": [
-    "有引用回答",
-    "拒答案例",
-    "冲突证据案例"
+    "50 条 RAG 评测集",
+    "失败分类表",
+    "优化前后指标"
   ],
-  "interview": "讲清“有检索结果”不等于“可以回答”。"
+  "interview": "我不用“感觉不错”讲 RAG，而是用检索命中、答案正确、引用正确和拒答准确率讲。"
 }
 </script>
 

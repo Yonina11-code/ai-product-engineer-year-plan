@@ -6,27 +6,28 @@ const lab: AdvancedLabDefinition = {
   "id": "W03D04",
   "week": "03",
   "day": "04",
-  "title": "结构化输出、Schema 与自动修复",
-  "dayTitle": "评测与失败分析",
-  "dayGoal": "构造样本集，记录失败原因，避免只看成功演示。",
-  "phase": "AI 应用工程底座",
+  "title": "结构化输出：让模型结果能进入业务系统",
+  "dayTitle": "失败样本与评测",
+  "dayGoal": "不要只看成功演示，构造失败样本，把问题归因到数据、模型、代码或产品边界。",
+  "phase": "阶段 1：AI 应用工程底座",
   "path": "/advanced/week-03/day-04",
   "lessonPath": "/advanced-track/lessons/week-03/day-04.md",
   "reviewPath": "/advanced-track/reviews/week-03.md",
   "mode": "schema",
-  "build": "设计 JSON 输出契约、运行时校验、失败重试和一次自动修复流程。",
+  "build": "为一个职场沟通改写功能设计 JSON 输出契约，服务端用 Schema 校验，不合格时自动 repair 一次，仍失败就降级。",
   "skills": [
-    "JSON Schema",
-    "运行时校验",
+    "结构化输出",
+    "Schema 校验",
     "Repair Prompt",
-    "业务字段契约"
+    "业务字段契约",
+    "降级策略"
   ],
   "proof": [
-    "Schema 文件",
+    "Schema 文件或类型定义",
     "10 条格式失败样本",
-    "修复前后对照"
+    "修复前后对照日志"
   ],
-  "interview": "讲清格式正确、内容合格、业务成功三者不是一回事。"
+  "interview": "我区分了格式正确、内容合格和业务成功，模型结果必须先过 Schema 和业务校验才能进入页面。"
 }
 </script>
 

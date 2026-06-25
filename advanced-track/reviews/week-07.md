@@ -1,4 +1,4 @@
-# W07 复盘：文档解析、Chunk 与 Metadata 设计
+# W07 复盘：RAG 数据准备：文档解析、Chunk 与 Metadata
 
 ## 本周投入时间
 
@@ -8,17 +8,34 @@
 
 - [ ] 导入脚本
 - [ ] chunk 样例
-- [ ] metadata 设计说明
+- [ ] metadata 字段说明
+
+## 本周补齐的后端基础
+
+- [ ] 文件读取
+- [ ] 数据清洗
+- [ ] chunk 策略
+- [ ] metadata 设计
+- [ ] 导入脚本
 
 ## 核心架构图
 
 ```mermaid
 flowchart LR
-  A["User / UI"] --> B["Server Boundary"]
-  B --> C["AI Capability"]
-  C --> D["Validation / Eval"]
+  A["User / Vue UI"] --> B["Your Server API"]
+  B --> C["AI / RAG / Tool Layer"]
+  C --> D["Validation / Safety / Eval"]
   D --> E["User-visible Result"]
+  B --> F["Logs / Trace / Cost"]
 ```
+
+## 成功链路
+
+- 输入：
+- 服务端处理：
+- AI / 数据层处理：
+- 输出：
+- 证据：
 
 ## 失败案例
 

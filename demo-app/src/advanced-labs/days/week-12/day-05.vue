@@ -6,27 +6,28 @@ const lab: AdvancedLabDefinition = {
   "id": "W12D05",
   "week": "12",
   "day": "05",
-  "title": "项目二：前端接口契约 RAG 助手",
+  "title": "Tool Calling：模型建议，程序裁决",
   "dayTitle": "作品集与面试表达",
-  "dayGoal": "沉淀架构图、代码证据、指标和三分钟讲法。",
-  "phase": "项目二",
+  "dayGoal": "整理架构图、关键代码、日志、评测结果和一段能被面试追问的讲法。",
+  "phase": "阶段 3：Tool / Agent / MCP",
   "path": "/advanced/week-12/day-05",
   "lessonPath": "/advanced-track/lessons/week-12/day-05.md",
   "reviewPath": "/advanced-track/reviews/week-12.md",
-  "mode": "rag",
-  "build": "做一个接口契约助手：能查字段来源、类型、页面使用点；不确定时追问，不允许猜字段。",
+  "mode": "tool",
+  "build": "给接口契约助手增加两个只读工具：lookupApiField 和 searchCodeReference，工具参数必须过 Schema。",
   "skills": [
-    "代码/文档知识库",
-    "字段契约",
-    "引用定位",
-    "未知追问"
+    "Tool Calling",
+    "Tool Schema",
+    "参数校验",
+    "只读工具",
+    "Trace"
   ],
   "proof": [
-    "可演示项目",
-    "50 条评测",
-    "字段引用截图"
+    "两个工具定义",
+    "异常参数拒绝记录",
+    "工具调用 Trace 截图"
   ],
-  "interview": "这是你的核心求职项目：AI + 前端工程经验的结合。"
+  "interview": "我不会直接相信模型生成的工具参数，工具执行前必须经过 Schema、权限和业务规则校验。"
 }
 </script>
 

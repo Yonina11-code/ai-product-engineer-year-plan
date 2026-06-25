@@ -1,4 +1,4 @@
-# W17 复盘：MCP + RAG + Tool 综合助手
+# W17 复盘：AI 产品边界：睡眠 / 情绪助手为什么难
 
 ## 本周投入时间
 
@@ -6,19 +6,36 @@
 
 ## 本周完成的工程证据
 
-- [ ] 综合 Demo
-- [ ] 多工具 Trace
-- [ ] 失败样本
+- [ ] 产品边界文档
+- [ ] 高风险样本测试
+- [ ] 安全提示截图
+
+## 本周补齐的后端基础
+
+- [ ] 用户数据最小化
+- [ ] 敏感内容分类
+- [ ] 安全策略路由
+- [ ] 拒答 / 升级
+- [ ] 隐私删除
 
 ## 核心架构图
 
 ```mermaid
 flowchart LR
-  A["User / UI"] --> B["Server Boundary"]
-  B --> C["AI Capability"]
-  C --> D["Validation / Eval"]
+  A["User / Vue UI"] --> B["Your Server API"]
+  B --> C["AI / RAG / Tool Layer"]
+  C --> D["Validation / Safety / Eval"]
   D --> E["User-visible Result"]
+  B --> F["Logs / Trace / Cost"]
 ```
+
+## 成功链路
+
+- 输入：
+- 服务端处理：
+- AI / 数据层处理：
+- 输出：
+- 证据：
 
 ## 失败案例
 

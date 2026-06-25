@@ -1,4 +1,4 @@
-# W20 复盘：项目三：AI 睡眠/情绪教练 MVP
+# W20 复盘：作品集、简历与 45 分钟项目答辩
 
 ## 本周投入时间
 
@@ -6,19 +6,36 @@
 
 ## 本周完成的工程证据
 
-- [ ] 可演示 MVP
-- [ ] 10 条用户反馈
-- [ ] 安全样本测试
+- [ ] 作品集首页
+- [ ] 两版简历项目描述
+- [ ] 45 分钟模拟答辩稿
+
+## 本周补齐的后端基础
+
+- [ ] 项目 README 标准
+- [ ] 架构图表达
+- [ ] 指标展示
+- [ ] 面试追问准备
+- [ ] 技术取舍复盘
 
 ## 核心架构图
 
 ```mermaid
 flowchart LR
-  A["User / UI"] --> B["Server Boundary"]
-  B --> C["AI Capability"]
-  C --> D["Validation / Eval"]
+  A["User / Vue UI"] --> B["Your Server API"]
+  B --> C["AI / RAG / Tool Layer"]
+  C --> D["Validation / Safety / Eval"]
   D --> E["User-visible Result"]
+  B --> F["Logs / Trace / Cost"]
 ```
+
+## 成功链路
+
+- 输入：
+- 服务端处理：
+- AI / 数据层处理：
+- 输出：
+- 证据：
 
 ## 失败案例
 

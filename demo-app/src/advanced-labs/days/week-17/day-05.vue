@@ -6,27 +6,28 @@ const lab: AdvancedLabDefinition = {
   "id": "W17D05",
   "week": "17",
   "day": "05",
-  "title": "MCP + RAG + Tool 综合助手",
+  "title": "AI 产品边界：睡眠 / 情绪助手为什么难",
   "dayTitle": "作品集与面试表达",
-  "dayGoal": "沉淀架构图、代码证据、指标和三分钟讲法。",
-  "phase": "MCP",
+  "dayGoal": "整理架构图、关键代码、日志、评测结果和一段能被面试追问的讲法。",
+  "phase": "阶段 4：产品化与安全",
   "path": "/advanced/week-17/day-05",
   "lessonPath": "/advanced-track/lessons/week-17/day-05.md",
   "reviewPath": "/advanced-track/reviews/week-17.md",
-  "mode": "rag",
-  "build": "让助手通过 MCP 查询契约、通过 RAG 找文档、通过工具生成开发清单。",
+  "mode": "product",
+  "build": "设计 AI 睡眠 / 情绪教练 MVP 的产品边界：目标用户、输入输出、禁止回答、危机场景、隐私策略。",
   "skills": [
-    "MCP 集成",
-    "RAG 引用",
-    "多工具编排",
-    "Trace"
+    "AI Product Boundary",
+    "Safety Policy",
+    "Crisis Escalation",
+    "隐私最小化",
+    "非医疗建议"
   ],
   "proof": [
-    "综合 Demo",
-    "多工具 Trace",
-    "失败样本"
+    "产品边界文档",
+    "高风险样本测试",
+    "安全提示截图"
   ],
-  "interview": "讲清一个复杂 AI 功能的端到端架构。"
+  "interview": "我做 AI 产品时会先定义边界，尤其在健康和情绪场景里，安全策略和隐私最小化是功能的一部分。"
 }
 </script>
 

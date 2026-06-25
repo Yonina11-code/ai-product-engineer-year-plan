@@ -1,4 +1,4 @@
-# W19 复盘：安全、隐私与高风险边界
+# W19 复盘：部署、监控与成本：作品集也要像真实项目
 
 ## 本周投入时间
 
@@ -6,19 +6,37 @@
 
 ## 本周完成的工程证据
 
-- [ ] 安全边界文档
-- [ ] 高风险样本测试
-- [ ] 拒答截图
+- [ ] 部署说明
+- [ ] 监控 / 日志截图
+- [ ] 一次故障复盘文档
+
+## 本周补齐的后端基础
+
+- [ ] 部署环境变量
+- [ ] CORS
+- [ ] 限流
+- [ ] 日志查询
+- [ ] 成本估算
+- [ ] 故障复盘
 
 ## 核心架构图
 
 ```mermaid
 flowchart LR
-  A["User / UI"] --> B["Server Boundary"]
-  B --> C["AI Capability"]
-  C --> D["Validation / Eval"]
+  A["User / Vue UI"] --> B["Your Server API"]
+  B --> C["AI / RAG / Tool Layer"]
+  C --> D["Validation / Safety / Eval"]
   D --> E["User-visible Result"]
+  B --> F["Logs / Trace / Cost"]
 ```
+
+## 成功链路
+
+- 输入：
+- 服务端处理：
+- AI / 数据层处理：
+- 输出：
+- 证据：
 
 ## 失败案例
 

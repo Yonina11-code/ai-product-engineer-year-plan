@@ -6,28 +6,28 @@ const lab: AdvancedLabDefinition = {
   "id": "W18D01",
   "week": "18",
   "day": "01",
-  "title": "可观测性：日志、Token、成本、延迟与质量",
-  "dayTitle": "架构判断",
-  "dayGoal": "读代码、画边界、明确这项能力解决什么工程问题。",
-  "phase": "产品化与上线",
+  "title": "项目四：AI 睡眠 / 情绪教练 MVP",
+  "dayTitle": "真实场景与边界",
+  "dayGoal": "先判断这个能力在真实产品里解决什么问题，以及前端、服务端、模型分别负责什么。",
+  "phase": "阶段 4 项目验收",
   "path": "/advanced/week-18/day-01",
   "lessonPath": "/advanced-track/lessons/week-18/day-01.md",
   "reviewPath": "/advanced-track/reviews/week-18.md",
-  "mode": "observability",
-  "build": "为项目加入请求日志、Token 统计、成本估算、错误率和质量抽样。",
+  "mode": "product",
+  "build": "完成一个非医疗化 AI 教练 MVP：日志录入、周总结、建议生成、用户反馈、安全拒答、调用日志。",
   "skills": [
-    "Observability",
-    "Token Usage",
-    "Cost",
-    "Latency",
-    "Quality Sampling"
+    "AI Product MVP",
+    "个性化上下文",
+    "用户反馈",
+    "安全边界",
+    "产品验证"
   ],
   "proof": [
-    "监控面板或日志表",
-    "成本记录",
-    "一次故障归因"
+    "可演示 MVP",
+    "10 条用户反馈样本",
+    "安全与失败测试报告"
   ],
-  "interview": "讲清 AI 功能上线后你看哪些指标。"
+  "interview": "这个项目证明我不只是写 AI 接口，还能判断产品是否需要 AI、如何控制风险、如何收集反馈迭代。"
 }
 </script>
 

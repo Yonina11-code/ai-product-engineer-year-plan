@@ -9,253 +9,373 @@ const lessonsRoot = path.join(trackRoot, 'lessons')
 const reviewsRoot = path.join(trackRoot, 'reviews')
 
 const dayPlan = [
-  ['01', '架构判断', '读代码、画边界、明确这项能力解决什么工程问题。'],
-  ['02', '最小实现', '写一个能跑的薄切片，不追求大而全。'],
-  ['03', '可靠性增强', '补错误处理、结构校验、边界条件和可观测信息。'],
-  ['04', '评测与失败分析', '构造样本集，记录失败原因，避免只看成功演示。'],
-  ['05', '作品集与面试表达', '沉淀架构图、代码证据、指标和三分钟讲法。'],
+  {
+    day: '01',
+    title: '真实场景与边界',
+    goal: '先判断这个能力在真实产品里解决什么问题，以及前端、服务端、模型分别负责什么。',
+  },
+  {
+    day: '02',
+    title: '最小代码闭环',
+    goal: '只写一条能跑通的端到端链路，优先把输入、服务端、模型或数据、输出串起来。',
+  },
+  {
+    day: '03',
+    title: '后端补点与可靠性',
+    goal: '补上这周必须懂的后端基础，并处理超时、校验、权限、日志或失败兜底。',
+  },
+  {
+    day: '04',
+    title: '失败样本与评测',
+    goal: '不要只看成功演示，构造失败样本，把问题归因到数据、模型、代码或产品边界。',
+  },
+  {
+    day: '05',
+    title: '作品集与面试表达',
+    goal: '整理架构图、关键代码、日志、评测结果和一段能被面试追问的讲法。',
+  },
 ]
 
 const weeks = [
   {
     week: 1,
-    phase: 'AI 应用工程底座',
-    title: '真实模型 Gateway 与调用边界',
-    why: '你已经会写前端和接口，这周直接做真实模型调用的工程边界，而不是再讲 Prompt 是什么。',
-    build: '在 demo-app 中完成一个可切换 Provider 的 AI Gateway：mock / DeepSeek，支持超时、错误归类、请求日志和敏感配置隔离。',
-    skills: ['Provider 抽象', '服务端 API Key 管理', '超时与错误分类', '模型响应归一化'],
-    proof: ['一张 AI Gateway 架构图', '一次真实模型调用记录', '三类失败错误截图或日志'],
-    interview: '如果面试官问“你怎么把大模型接进现有前端系统”，你要能讲清为什么不在前端直接调模型。'
+    phase: '阶段 1：AI 应用工程底座',
+    title: 'AI Gateway：前端如何安全接入真实模型',
+    realProblem: '前端不能直接把 API Key 暴露给浏览器，也不能把模型错误、超时、供应商差异全部丢给页面处理。本周你要做的是 AI 应用的服务端入口。',
+    build: '在 demo-app 里做一个 Node AI Gateway：前端只请求自己的服务端，服务端支持 mock / DeepSeek Provider，统一返回格式、错误类型和 requestId。',
+    frontendEntry: '用你熟悉的 Vue 页面发起请求、展示 loading / success / error，并观察 Network 里前端到底看不到哪些敏感信息。',
+    backendBasics: ['Node HTTP 路由', '环境变量读取', 'Provider service 分层', '请求超时', '错误分类'],
+    skills: ['AI Gateway', 'Provider 抽象', 'API Key 服务端隔离', '统一响应契约', 'requestId'],
+    codeTasks: [
+      '新增或整理 /api/ai/chat 接口，前端只调用自己的服务端。',
+      '实现 mockProvider 和 deepseekProvider 的统一接口。',
+      '给请求加 requestId、timeoutMs、错误类型和用户可见错误文案。',
+    ],
+    proof: ['一张 AI Gateway 边界图', '一次真实 DeepSeek 调用日志', '三类失败日志：无 Key、超时、Provider 错误'],
+    interview: '我没有在前端直接调模型，而是在服务端做 Gateway，隔离 API Key，并统一 Provider、错误、日志和降级策略。',
   },
   {
     week: 2,
-    phase: 'AI 应用工程底座',
-    title: 'Streaming、取消生成与体验状态机',
-    why: 'AI 产品的体验差异不只是结果质量，还包括首字延迟、流式反馈、取消和重试。',
-    build: '实现 SSE 流式输出、取消生成、重新生成和前端状态机。',
-    skills: ['SSE', 'AbortController', '首字延迟', '加载/取消/失败状态'],
-    proof: ['流式输出 Demo', '取消生成截图', '状态机说明'],
-    interview: '讲清 AI 响应慢时，前端怎样设计体验，而不是只加 loading。'
+    phase: '阶段 1：AI 应用工程底座',
+    title: 'Streaming：AI 响应慢时前端体验怎么做',
+    realProblem: 'AI 不是普通接口，用户可能等 10 秒才看到完整结果。前端要处理首字延迟、流式输出、中途取消、重试和失败恢复。',
+    build: '把上周 Gateway 扩展成流式输出：服务端通过 SSE 返回 token，前端实现 streaming / cancelled / failed / done 状态机。',
+    frontendEntry: '你重点练的是状态机和交互体验：按钮什么时候禁用、取消后输入是否保留、失败后是否能重试。',
+    backendBasics: ['SSE 响应头', 'ReadableStream 基础', 'AbortController', '连接断开处理', '首字延迟记录'],
+    skills: ['SSE', '流式输出', '取消生成', '前端状态机', '首字延迟'],
+    codeTasks: [
+      '新增 /api/ai/stream 接口，先用 mock stream 跑通，再接真实 Provider。',
+      '前端把完整 loading 改成 token 逐步展示。',
+      '实现取消生成和重新生成，保留用户原始输入。',
+    ],
+    proof: ['流式输出录屏或截图', '取消生成的 Network / 日志证据', '状态机图：idle -> streaming -> done / cancelled / failed'],
+    interview: 'AI 慢不是只加 loading，我会用流式输出降低感知等待，并用状态机保证取消、重试和失败恢复可控。',
   },
   {
     week: 3,
-    phase: 'AI 应用工程底座',
-    title: '结构化输出、Schema 与自动修复',
-    why: '找工作时，“会调模型”不够，必须证明你能让模型输出进入业务系统。',
-    build: '设计 JSON 输出契约、运行时校验、失败重试和一次自动修复流程。',
-    skills: ['JSON Schema', '运行时校验', 'Repair Prompt', '业务字段契约'],
-    proof: ['Schema 文件', '10 条格式失败样本', '修复前后对照'],
-    interview: '讲清格式正确、内容合格、业务成功三者不是一回事。'
+    phase: '阶段 1：AI 应用工程底座',
+    title: '结构化输出：让模型结果能进入业务系统',
+    realProblem: '模型输出一段自然语言很容易，但业务系统需要稳定字段。你要解决的是格式错误、字段缺失、内容不合格和自动修复。',
+    build: '为一个职场沟通改写功能设计 JSON 输出契约，服务端用 Schema 校验，不合格时自动 repair 一次，仍失败就降级。',
+    frontendEntry: '前端只展示已经校验过的结果，不直接相信模型原文；错误状态要能告诉用户是格式失败还是内容失败。',
+    backendBasics: ['运行时 Schema 校验', 'JSON parse 防御', '错误码设计', '一次重试策略', '服务端字段契约'],
+    skills: ['结构化输出', 'Schema 校验', 'Repair Prompt', '业务字段契约', '降级策略'],
+    codeTasks: [
+      '定义 rewriteResult schema：rewrittenText、tone、riskFlags、reason。',
+      '服务端校验模型 JSON，失败后只 repair 一次。',
+      '前端分别展示成功、格式失败、内容不合格和降级结果。',
+    ],
+    proof: ['Schema 文件或类型定义', '10 条格式失败样本', '修复前后对照日志'],
+    interview: '我区分了格式正确、内容合格和业务成功，模型结果必须先过 Schema 和业务校验才能进入页面。',
   },
   {
     week: 4,
-    phase: 'AI 应用工程底座',
-    title: 'Prompt Registry、版本管理与灰度',
-    why: '你不需要学“Prompt 不同输出不同”，你需要学 Prompt 如何像工程配置一样被管理。',
-    build: '实现 Prompt Registry：按 taskType 选择模板，记录版本、变更原因和回滚策略。',
-    skills: ['Prompt 版本', '任务路由', '配置与代码分离', '灰度/回滚'],
-    proof: ['Prompt Registry 代码', '版本变更记录', '一次回归对比'],
-    interview: '讲清为什么 Prompt 不是散落在代码里的字符串。'
+    phase: '阶段 1：AI 应用工程底座',
+    title: 'Prompt Registry 与评测：不要把 Prompt 写成散落字符串',
+    realProblem: '你已经知道 Prompt 会影响结果，真正需要学的是 Prompt 怎么版本化、怎么灰度、怎么回滚、怎么证明没有变差。',
+    build: '实现 Prompt Registry：按 taskType 选择模板，记录版本和变更原因，并为职场改写功能建立第一批 30 条评测样本。',
+    frontendEntry: '前端传 taskType 和用户输入，不传完整 Prompt；页面展示当前 promptVersion，便于调试和复盘。',
+    backendBasics: ['配置与代码分离', '任务路由', '版本号设计', '评测脚本', '回归报告'],
+    skills: ['Prompt Registry', 'Prompt Version', 'Eval Dataset', '回归测试', '灰度 / 回滚'],
+    codeTasks: [
+      '把 Prompt 从接口逻辑里抽到 registry。',
+      '为 workplace_rewrite 准备 v1 / v2 两个版本。',
+      '写最小评测脚本，对 30 条输入输出进行规则评分。',
+    ],
+    proof: ['Prompt Registry 代码', '30 条评测样本', 'v1 / v2 回归对比表'],
+    interview: 'Prompt 在我的项目里不是玄学字符串，而是有任务路由、版本记录、评测集和回滚策略的工程配置。',
   },
   {
     week: 5,
-    phase: 'AI 应用工程底座',
-    title: '评测集、回归测试与质量门禁',
-    why: 'AI 工程最值钱的能力之一，是把“感觉不错”变成可回归的质量标准。',
-    build: '为一个 AI 功能建立 30 条评测集，跑自动评分和人工复核记录。',
-    skills: ['Eval Dataset', '规则评分', '人工复核', 'CI 质量门禁'],
-    proof: ['30 条评测样本', '评分脚本', '一次回归报告'],
-    interview: '讲清你怎么证明一次 Prompt 或模型升级没有把功能改坏。'
+    phase: '阶段 1：AI 应用工程底座',
+    title: '会话、日志、成本：AI 功能上线前必须补的后端基础',
+    realProblem: 'AI 功能上线后，最常见的问题是慢、贵、偶发失败、无法复盘。你需要能保存调用记录并定位问题。',
+    build: '为前 4 周能力加调用日志：requestId、userInput 摘要、provider、model、耗时、token、错误类型、promptVersion。',
+    frontendEntry: '前端展示 requestId，用户反馈问题时能把 requestId 给到开发定位。',
+    backendBasics: ['日志模型设计', '简单持久化 JSON / SQLite 思路', 'token 与成本字段', '敏感信息脱敏', '请求追踪'],
+    skills: ['调用日志', 'Token Usage', 'Cost Tracking', '脱敏', '问题复盘'],
+    codeTasks: [
+      '设计 ai_call_logs 数据结构，不保存完整敏感输入。',
+      '每次模型调用都写入日志，失败也要写。',
+      '做一个简单日志查看页面或命令，按 requestId 查询。',
+    ],
+    proof: ['调用日志样例', '一次失败 requestId 追踪记录', '成本 / 延迟统计截图或表格'],
+    interview: '我不只看接口 200，还会记录模型、耗时、token、成本、错误类型和质量样本，用 requestId 复盘问题。',
   },
   {
     week: 6,
-    phase: '项目一',
-    title: '项目一：AI 职场沟通助手工程化重做',
-    why: '这个项目不再是练 Prompt，而是练完整 AI 应用闭环。',
-    build: '完成职场沟通助手 MVP：真实模型、结构化输出、评测集、复制结果、失败降级。',
-    skills: ['端到端闭环', '真实用户输入', '可复制输出', '失败兜底'],
-    proof: ['在线或本地演示', '30 条评测结果', '成本和延迟记录'],
-    interview: '把这个项目讲成“我如何把不稳定模型变成可用产品功能”。'
+    phase: '阶段 1 项目验收',
+    title: '项目一：AI 职场沟通助手工程化版本',
+    realProblem: '这个项目不是练 Prompt，而是证明你能把一个 AI 文本能力做成可用、可测、可复盘的小产品。',
+    build: '完成职场沟通助手 MVP：真实模型、结构化输出、Prompt Registry、评测集、日志、复制结果、失败降级。',
+    frontendEntry: '做一个像真实功能的页面：输入原话、选择目标语气、展示改写结果、解释改写原因、复制输出。',
+    backendBasics: ['端到端接口设计', 'DTO / ViewModel 边界', '错误码到 UI 状态映射', '最小验收接口', '本地部署'],
+    skills: ['端到端闭环', '产品交互', '评测证据', '失败兜底', '项目表达'],
+    codeTasks: [
+      '把前 5 周能力收敛到一个完整页面和一个清晰 API。',
+      '补齐 30 条评测样本和失败样本。',
+      '整理 README：如何运行、如何验证、有什么边界。',
+    ],
+    proof: ['可演示项目', '30 条评测结果', '项目 README 与架构图'],
+    interview: '我做的是一个可上线雏形：前端体验、服务端 Gateway、结构化校验、Prompt 版本、评测和日志都有闭环。',
   },
   {
     week: 7,
-    phase: 'RAG 工程',
-    title: '文档解析、Chunk 与 Metadata 设计',
-    why: 'RAG 不是把文档丢进向量库，难点是数据工程和可追溯性。',
-    build: '建立小型知识库导入流程：解析文档、切 chunk、写 metadata、保留来源定位。',
-    skills: ['文档解析', 'Chunk 策略', 'Metadata', '来源追踪'],
-    proof: ['导入脚本', 'chunk 样例', 'metadata 设计说明'],
-    interview: '讲清 chunk 大小、重叠、来源字段为什么影响回答质量。'
+    phase: '阶段 2：RAG 工程',
+    title: 'RAG 数据准备：文档解析、Chunk 与 Metadata',
+    realProblem: 'RAG 失败很多时候不是模型问题，而是资料切错了、来源丢了、metadata 不够，导致回答无法追溯。',
+    build: '建立一个小型接口契约知识库导入流程：导入 markdown / json 文档，切 chunk，写 metadata，保留来源位置。',
+    frontendEntry: '你从前端开发痛点切入：字段来自哪个接口、类型是什么、哪个页面用过、来源在哪里。',
+    backendBasics: ['文件读取', '数据清洗', 'chunk 策略', 'metadata 设计', '导入脚本'],
+    skills: ['Document Ingestion', 'Chunk', 'Metadata', 'Source Trace', '接口契约知识库'],
+    codeTasks: [
+      '准备一批模拟接口文档和页面字段说明。',
+      '写 ingest 脚本，把文档切成 chunk。',
+      '每个 chunk 保留 docId、sourcePath、section、fieldName 等 metadata。',
+    ],
+    proof: ['导入脚本', 'chunk 样例', 'metadata 字段说明'],
+    interview: 'RAG 不是把文档扔进向量库，我会先设计 chunk 和 metadata，保证答案能追溯到来源。',
   },
   {
     week: 8,
-    phase: 'RAG 工程',
-    title: 'Embedding、向量检索与混合召回',
-    why: '你需要能解释检索失败来自哪里，而不是只说“向量库没搜到”。',
-    build: '实现关键词检索、向量检索和混合召回对比。',
-    skills: ['Embedding', '向量检索', '关键词召回', 'Hybrid Search'],
-    proof: ['三种召回结果对照', '10 条失败查询归因', '召回策略说明'],
-    interview: '讲清什么时候向量检索不如关键词检索。'
+    phase: '阶段 2：RAG 工程',
+    title: '检索实现：关键词、向量与混合召回',
+    realProblem: '真实用户不会按文档原字段名提问，纯关键词和纯向量都会失败。你要学会比较召回效果。',
+    build: '实现关键词检索、向量检索和混合召回，针对接口字段问题输出候选 chunk 和得分。',
+    frontendEntry: '前端做一个检索调试台：输入问题后展示候选文档、分数、metadata 和被选中的上下文。',
+    backendBasics: ['embedding 调用', '向量相似度', 'topK', '关键词索引', '召回结果合并'],
+    skills: ['Embedding', 'Vector Search', 'Keyword Search', 'Hybrid Search', '检索调试'],
+    codeTasks: [
+      '先实现本地关键词检索，保证可跑。',
+      '再接 embedding，保存向量并做 topK 检索。',
+      '实现 hybrid merge，展示每条候选的来源和分数。',
+    ],
+    proof: ['三种检索结果对比', '10 条失败查询归因', '检索调试页面截图'],
+    interview: '我能解释检索失败来自哪里，并知道什么时候关键词比向量更可靠，什么时候需要混合召回。',
   },
   {
     week: 9,
-    phase: 'RAG 工程',
-    title: 'Query Rewrite、Rerank 与上下文选择',
-    why: '真实用户不会按你的文档字段名提问，所以要处理口语化、缩写和多意图。',
-    build: '实现 Query Rewrite、候选文档重排和上下文预算控制。',
-    skills: ['查询改写', 'Rerank', '上下文预算', '多路召回合并'],
-    proof: ['改写前后召回对比', 'Rerank Trace', '上下文裁剪规则'],
-    interview: '讲清如何提升 RAG 命中率而不是盲目加更多文档。'
+    phase: '阶段 2：RAG 工程',
+    title: '可信回答：引用、拒答与冲突证据',
+    realProblem: 'RAG 项目最怕模型拿到一点资料就开始补全。接口字段、类型、来源不明确时必须拒答或追问。',
+    build: '让接口契约问答必须带引用；证据不足时拒答；证据冲突时输出不确定原因和待确认字段。',
+    frontendEntry: '页面不能只展示答案，还要展示引用来源、chunk 片段和“不确定”的原因。',
+    backendBasics: ['上下文拼装', '引用结构', '拒答规则', '冲突检测', '答案后校验'],
+    skills: ['Grounded Answer', 'Citation', 'Refusal', 'Conflict Handling', '字段不猜测'],
+    codeTasks: [
+      '回答结构增加 answer、citations、confidence、unknownFields。',
+      '证据不足时返回拒答，不让模型自由补字段。',
+      '实现引用点击或来源展示，能看到原始 chunk。',
+    ],
+    proof: ['有引用回答案例', '拒答案例', '冲突证据案例'],
+    interview: '我做 RAG 时不会让模型猜字段，证据不足就拒答或追问，并把引用展示给用户。',
   },
   {
     week: 10,
-    phase: 'RAG 工程',
-    title: '引用、拒答与可信回答',
-    why: '面试里 RAG 项目最容易被追问：你怎么防止它编？',
-    build: '让回答必须带来源引用；证据不足时拒答；冲突证据时提示不确定。',
-    skills: ['Grounded Answer', 'Citation', 'Refusal', '冲突证据处理'],
-    proof: ['有引用回答', '拒答案例', '冲突证据案例'],
-    interview: '讲清“有检索结果”不等于“可以回答”。'
+    phase: '阶段 2：RAG 工程',
+    title: 'RAG 评测：把“效果还行”变成指标',
+    realProblem: 'RAG Demo 很容易看起来能用，但一换问题就失败。你要建立能反复跑的评测集和失败归因。',
+    build: '准备 50 条接口契约问答评测，区分检索失败、引用错误、生成错误、资料缺失和应该拒答。',
+    frontendEntry: '做一个评测结果页或表格，能看到每条样本的问题、期望、实际、引用和失败类型。',
+    backendBasics: ['评测数据格式', '批量运行脚本', '指标计算', '失败归因', '回归对比'],
+    skills: ['Retrieval Eval', 'Answer Eval', 'Citation Eval', 'Failure Taxonomy', '回归指标'],
+    codeTasks: [
+      '整理 50 条 eval cases，覆盖字段来源、类型、枚举值、未知字段。',
+      '写批量评测脚本，输出 JSON / markdown 报告。',
+      '至少优化一轮检索或回答规则，并记录指标变化。',
+    ],
+    proof: ['50 条 RAG 评测集', '失败分类表', '优化前后指标'],
+    interview: '我不用“感觉不错”讲 RAG，而是用检索命中、答案正确、引用正确和拒答准确率讲。',
   },
   {
     week: 11,
-    phase: 'RAG 工程',
-    title: 'RAG 评测：命中率、正确性与引用质量',
-    why: 'RAG 项目没有评测，就只是 Demo；有评测，才像工程项目。',
-    build: '构造 50 条 RAG 评测集，区分检索失败、生成失败和数据缺失。',
-    skills: ['Retrieval Eval', 'Answer Eval', 'Citation Eval', '失败归因'],
-    proof: ['50 条评测集', '失败分类表', '优化前后指标'],
-    interview: '用指标讲 RAG 项目，而不是用“效果还不错”讲。'
+    phase: '阶段 2 项目验收',
+    title: '项目二：前端接口契约 RAG 助手',
+    realProblem: '这是最贴合你前端背景的核心项目：把你对字段契约、接口联调、页面排查的经验变成 AI 助手。',
+    build: '完成一个接口契约 RAG 助手：能查字段来源、类型、枚举、页面使用点；不能确定时拒答或追问。',
+    frontendEntry: '做一个真实可演示的查询页面，展示答案、引用、未知字段、相关页面和失败原因。',
+    backendBasics: ['RAG API 分层', '知识库更新流程', '缓存策略', '权限边界', '项目 README'],
+    skills: ['接口契约助手', 'RAG 闭环', '字段来源', '引用定位', '未知追问'],
+    codeTasks: [
+      '把 W7-W10 能力收敛成一个完整项目。',
+      '补齐 50 条评测与 5 个失败案例。',
+      '整理项目故事：为什么这是前端转 AI 的优势项目。',
+    ],
+    proof: ['可演示 RAG 项目', '50 条评测报告', '字段引用截图与架构图'],
+    interview: '这个项目证明我不是只会调模型，而是能把 AI 用在前端真实工程痛点：接口字段、契约和排查效率。',
   },
   {
     week: 12,
-    phase: '项目二',
-    title: '项目二：前端接口契约 RAG 助手',
-    why: '这个项目贴合你的前端背景，能展示你对接口字段、契约和 AI 的结合能力。',
-    build: '做一个接口契约助手：能查字段来源、类型、页面使用点；不确定时追问，不允许猜字段。',
-    skills: ['代码/文档知识库', '字段契约', '引用定位', '未知追问'],
-    proof: ['可演示项目', '50 条评测', '字段引用截图'],
-    interview: '这是你的核心求职项目：AI + 前端工程经验的结合。'
+    phase: '阶段 3：Tool / Agent / MCP',
+    title: 'Tool Calling：模型建议，程序裁决',
+    realProblem: 'Tool Calling 不是让模型直接执行函数，而是让模型提出工具调用意图，再由程序做参数校验、权限判断和执行。',
+    build: '给接口契约助手增加两个只读工具：lookupApiField 和 searchCodeReference，工具参数必须过 Schema。',
+    frontendEntry: '前端展示工具调用 Trace：模型为什么选这个工具、传了什么参数、工具返回了什么。',
+    backendBasics: ['Tool Schema', '参数校验', '只读工具', '工具结果归一化', 'Trace 记录'],
+    skills: ['Tool Calling', 'Tool Schema', '参数校验', '只读工具', 'Trace'],
+    codeTasks: [
+      '定义 lookupApiField 工具输入输出。',
+      '定义 searchCodeReference 工具输入输出。',
+      '前端展示工具调用 Trace，而不是只展示最终答案。',
+    ],
+    proof: ['两个工具定义', '异常参数拒绝记录', '工具调用 Trace 截图'],
+    interview: '我不会直接相信模型生成的工具参数，工具执行前必须经过 Schema、权限和业务规则校验。',
   },
   {
     week: 13,
-    phase: '工具调用与 Agent',
-    title: 'Tool Calling：只读工具、写工具与权限边界',
-    why: 'Agent 不是让模型乱调用函数，而是模型建议、程序裁决、权限兜底。',
-    build: '实现查询类工具和写操作工具，加入参数校验、权限判断、用户确认。',
-    skills: ['Tool Schema', '参数校验', '只读/写操作', '用户确认'],
-    proof: ['两个工具定义', '写操作确认流程', '异常参数测试'],
-    interview: '讲清为什么不能相信模型生成的工具参数。'
+    phase: '阶段 3：Tool / Agent / MCP',
+    title: '写操作边界：确认、幂等与审计',
+    realProblem: '一旦工具有写操作，风险就完全不同。删除、修改、发送、创建都必须有确认、幂等和审计。',
+    build: '实现一个模拟写工具 createDevTask，只允许生成待确认任务，不允许模型直接提交最终结果。',
+    frontendEntry: '前端必须出现二次确认面板：展示将要执行的动作、参数、影响范围和取消按钮。',
+    backendBasics: ['写操作权限', '幂等键', '审计日志', '二次确认 token', '副作用隔离'],
+    skills: ['Write Tool', 'Human Confirmation', 'Idempotency', 'Audit Log', '副作用边界'],
+    codeTasks: [
+      '实现 createDevTaskDraft，只生成草稿。',
+      '实现 confirmDevTask，必须携带 confirmationId。',
+      '记录 audit log：谁、何时、确认了什么。',
+    ],
+    proof: ['写操作确认流程截图', '重复提交防护日志', '审计日志样例'],
+    interview: '我会把只读工具和写工具分开，写操作必须用户确认、幂等防重复，并留下审计日志。',
   },
   {
     week: 14,
-    phase: '工具调用与 Agent',
-    title: 'Workflow vs Agent：状态机、Trace 与终止条件',
-    why: '企业更关心可控性。你要知道什么时候用固定 Workflow，什么时候才用 Agent。',
-    build: '同一个任务分别实现 Workflow 和 Agent 版本，对比可测试性和失败边界。',
-    skills: ['Workflow', 'Agent Loop', 'Trace', '终止条件'],
-    proof: ['两种实现对比', 'Trace 日志', '死循环防护'],
-    interview: '讲清 Agent 不是越自由越好。'
+    phase: '阶段 3：Tool / Agent / MCP',
+    title: 'Workflow vs Agent：什么时候不该用 Agent',
+    realProblem: '很多任务用固定 workflow 更稳定。只有当下一步依赖中间结果、流程不固定时，才考虑 Agent。',
+    build: '同一个“生成开发清单”任务分别做 workflow 版和 agent loop 版，对比可控性、可测试性和失败边界。',
+    frontendEntry: '前端展示两种模式的执行步骤，让你直观看到固定流程和 Agent 动态决策的差异。',
+    backendBasics: ['状态机', 'Agent Loop', 'maxSteps', '终止条件', '可回放 Trace'],
+    skills: ['Workflow', 'Agent Loop', 'State Machine', 'Trace', '终止条件'],
+    codeTasks: [
+      '实现固定 workflow：检索 -> 生成清单 -> 校验 -> 输出。',
+      '实现受限 Agent：最多 5 步，只能调用只读工具。',
+      '对比两种模式的失败样本和可测试性。',
+    ],
+    proof: ['两种实现对比', 'Agent Trace 日志', '死循环防护案例'],
+    interview: '我不会为了炫技乱用 Agent，能写死流程就用 workflow，只有流程依赖中间结果时才用受限 Agent。',
   },
   {
     week: 15,
-    phase: '工具调用与 Agent',
-    title: 'Agent 可靠性：幂等、重试、人工接管',
-    why: '真实 Agent 最大问题是副作用和不可控行为。',
-    build: '给 Agent 加入幂等键、最大步数、失败重试、人工接管和操作审计。',
-    skills: ['幂等', '重试策略', '人工接管', '审计日志'],
-    proof: ['重复提交防护', '失败恢复案例', '审计日志样例'],
-    interview: '讲清你如何限制 Agent 的危险行为。'
+    phase: '阶段 3：Tool / Agent / MCP',
+    title: 'MCP Server：把你的工具标准化暴露给 AI',
+    realProblem: 'MCP 不是另一个模型，而是把工具和资源用统一协议提供给 AI 客户端。它适合封装公司内部查询能力。',
+    build: '用 Node 写一个最小 MCP Server，暴露 lookupApiField 工具和 api-doc resource。',
+    frontendEntry: '前端仍然通过你的应用使用能力，但你要理解 MCP Server 在架构中位于工具服务层。',
+    backendBasics: ['MCP Tool', 'MCP Resource', 'JSON Schema', '最小权限暴露', '本地调试'],
+    skills: ['MCP Server', 'Tool', 'Resource', 'Schema', '权限边界'],
+    codeTasks: [
+      '实现一个最小 MCP Server。',
+      '把 lookupApiField 封装成 MCP Tool。',
+      '只暴露必要资源，非法参数要拒绝。',
+    ],
+    proof: ['最小 MCP Server 代码', '工具调用截图或日志', '非法参数拒绝记录'],
+    interview: 'MCP 和普通 API 的关系是：普通 API 给业务系统用，MCP 把受控工具和资源以标准方式给 AI 客户端用。',
   },
   {
     week: 16,
-    phase: 'MCP',
-    title: 'MCP Server：把现有能力封装给 AI 使用',
-    why: 'MCP 的价值不是名词，而是把工具、资源和权限以标准方式暴露给模型客户端。',
-    build: '用 Node 写一个最小 MCP Server，封装一个只读接口契约查询工具。',
-    skills: ['MCP Tool', 'MCP Resource', 'Schema', '权限边界'],
-    proof: ['最小 MCP Server', '工具调用截图', '错误参数拒绝记录'],
-    interview: '讲清 MCP 和普通后端 API 的关系。'
+    phase: '阶段 3 项目验收',
+    title: '项目三：MCP + RAG + Tool 综合接口助手',
+    realProblem: '这一周把 RAG、Tool、Agent 和 MCP 串成一个真正能讲清楚的综合项目。',
+    build: '让助手通过 RAG 找证据，通过 Tool 查询结构化字段，通过受限 Agent 决定是否继续查，并把工具封装成 MCP。',
+    frontendEntry: '前端重点展示完整 Trace：检索了什么、调用了什么工具、为什么拒答或继续查。',
+    backendBasics: ['多能力编排', 'Trace 数据结构', '错误传播', '权限分层', '综合项目验收'],
+    skills: ['RAG + Tool', '受限 Agent', 'MCP 封装', 'Trace', '综合架构'],
+    codeTasks: [
+      '整合 RAG 检索、lookupApiField 工具和 Agent workflow。',
+      '输出完整 Trace，能回放每一步。',
+      '整理综合项目架构图和失败样本。',
+    ],
+    proof: ['综合 Demo', '多工具 Trace', '项目架构图与失败样本'],
+    interview: '我能讲清一个 AI 系统里模型、RAG、Tool、Agent、MCP 分别解决什么问题，以及为什么不混用。',
   },
   {
     week: 17,
-    phase: 'MCP',
-    title: 'MCP + RAG + Tool 综合助手',
-    why: '这一周把前面的能力串起来，形成一个够硬的综合案例。',
-    build: '让助手通过 MCP 查询契约、通过 RAG 找文档、通过工具生成开发清单。',
-    skills: ['MCP 集成', 'RAG 引用', '多工具编排', 'Trace'],
-    proof: ['综合 Demo', '多工具 Trace', '失败样本'],
-    interview: '讲清一个复杂 AI 功能的端到端架构。'
+    phase: '阶段 4：产品化与安全',
+    title: 'AI 产品边界：睡眠 / 情绪助手为什么难',
+    realProblem: '情绪和睡眠助手适合你的兴趣，但也有高风险边界：不能诊断、不能替代医生、不能处理危机不升级。',
+    build: '设计 AI 睡眠 / 情绪教练 MVP 的产品边界：目标用户、输入输出、禁止回答、危机场景、隐私策略。',
+    frontendEntry: '前端做用户日志录入、周总结、建议展示和安全提示，不做医疗诊断 UI 暗示。',
+    backendBasics: ['用户数据最小化', '敏感内容分类', '安全策略路由', '拒答 / 升级', '隐私删除'],
+    skills: ['AI Product Boundary', 'Safety Policy', 'Crisis Escalation', '隐私最小化', '非医疗建议'],
+    codeTasks: [
+      '定义 sleep_log / mood_log 最小数据结构。',
+      '实现高风险输入识别，命中后走安全提示。',
+      '写产品边界文档：能做什么，不能做什么。',
+    ],
+    proof: ['产品边界文档', '高风险样本测试', '安全提示截图'],
+    interview: '我做 AI 产品时会先定义边界，尤其在健康和情绪场景里，安全策略和隐私最小化是功能的一部分。',
   },
   {
     week: 18,
-    phase: '产品化与上线',
-    title: '可观测性：日志、Token、成本、延迟与质量',
-    why: '上线后你要知道 AI 功能为什么慢、为什么贵、为什么错。',
-    build: '为项目加入请求日志、Token 统计、成本估算、错误率和质量抽样。',
-    skills: ['Observability', 'Token Usage', 'Cost', 'Latency', 'Quality Sampling'],
-    proof: ['监控面板或日志表', '成本记录', '一次故障归因'],
-    interview: '讲清 AI 功能上线后你看哪些指标。'
+    phase: '阶段 4 项目验收',
+    title: '项目四：AI 睡眠 / 情绪教练 MVP',
+    realProblem: '这是偏 AI 产品工程师方向的项目，重点证明你能把用户场景、AI 能力、工程边界和安全策略结合起来。',
+    build: '完成一个非医疗化 AI 教练 MVP：日志录入、周总结、建议生成、用户反馈、安全拒答、调用日志。',
+    frontendEntry: '前端做成完整产品感：今日记录、趋势摘要、建议卡片、反馈按钮、安全提示。',
+    backendBasics: ['用户上下文组装', '历史摘要', '反馈数据', '安全分类', '上线前验收'],
+    skills: ['AI Product MVP', '个性化上下文', '用户反馈', '安全边界', '产品验证'],
+    codeTasks: [
+      '实现日志录入和历史摘要输入。',
+      '模型生成周总结和建议卡片，必须经过安全规则。',
+      '加入用户反馈：有用 / 不准确 / 不安全。',
+    ],
+    proof: ['可演示 MVP', '10 条用户反馈样本', '安全与失败测试报告'],
+    interview: '这个项目证明我不只是写 AI 接口，还能判断产品是否需要 AI、如何控制风险、如何收集反馈迭代。',
   },
   {
     week: 19,
-    phase: '产品化与上线',
-    title: '安全、隐私与高风险边界',
-    why: 'AI 项目进入健康、情绪、工作建议场景时，安全边界是硬要求。',
-    build: '为一个助手设计敏感数据最小化、危机场景升级、免责声明和拒答策略。',
-    skills: ['数据最小化', '安全策略', '危机升级', '隐私删除'],
-    proof: ['安全边界文档', '高风险样本测试', '拒答截图'],
-    interview: '讲清你如何避免 AI 产品伤害用户或制造合规风险。'
+    phase: '阶段 5：上线与作品集',
+    title: '部署、监控与成本：作品集也要像真实项目',
+    realProblem: '求职项目如果只能本地跑，可信度会弱。你至少要能讲清部署、环境变量、日志、成本和线上故障排查。',
+    build: '为核心项目整理部署方案和监控面板：环境变量、日志查看、错误率、延迟、token、成本估算。',
+    frontendEntry: '前端展示一个简单运营 / 调试面板：调用次数、失败率、平均延迟、成本估算。',
+    backendBasics: ['部署环境变量', 'CORS', '限流', '日志查询', '成本估算', '故障复盘'],
+    skills: ['Deployment', 'Observability', 'Rate Limit', 'Cost', 'Incident Review'],
+    codeTasks: [
+      '整理本地和部署环境变量说明。',
+      '实现最小监控数据展示。',
+      '写一次故障复盘：慢、错、贵或失败。',
+    ],
+    proof: ['部署说明', '监控 / 日志截图', '一次故障复盘文档'],
+    interview: '我能讲 AI 功能上线后看哪些指标：延迟、错误、token、成本、质量抽样和用户反馈。',
   },
   {
     week: 20,
-    phase: '项目三',
-    title: '项目三：AI 睡眠/情绪教练 MVP',
-    why: '这是偏产品岗位的项目，展示你不只是会工程，还懂用户问题和风险边界。',
-    build: '完成一个非医疗化建议助手：日志录入、周总结、建议生成、安全提示。',
-    skills: ['产品定义', '个性化上下文', '非医疗边界', '用户反馈'],
-    proof: ['可演示 MVP', '10 条用户反馈', '安全样本测试'],
-    interview: '讲清你怎么判断一个 AI 产品是否真的需要 AI。'
-  },
-  {
-    week: 21,
-    phase: '求职作品集',
-    title: '作品集工程化整理',
-    why: '项目做完不等于能找工作，你要把证据整理成招聘方看得懂的页面。',
-    build: '整理作品集首页：项目背景、架构图、关键代码、评测、成本、失败处理。',
-    skills: ['项目叙事', '架构表达', '指标展示', '技术取舍'],
-    proof: ['作品集首页', '两张架构图', '三段核心代码说明'],
-    interview: '把项目从“我做了功能”讲成“我解决了问题”。'
-  },
-  {
-    week: 22,
-    phase: '求职作品集',
-    title: 'AI 工程面试专项',
-    why: '你需要准备的是 AI 工程追问：模型不稳定、RAG 失败、Agent 安全、成本监控。',
-    build: '整理 30 个高频面试问答，并用自己的项目回答。',
-    skills: ['技术表达', '项目追问', '架构权衡', '失败复盘'],
-    proof: ['30 个问答', '三分钟项目介绍', '一次模拟面试记录'],
-    interview: '用自己的项目回答，不背概念。'
-  },
-  {
-    week: 23,
-    phase: '求职作品集',
-    title: '简历、岗位匹配与投递材料',
-    why: '目标是换工作，所以最后必须落到简历和岗位匹配。',
-    build: '改造简历项目描述，准备 AI Product Engineer / AI Engineer 两版表达。',
-    skills: ['简历表达', 'JD 匹配', '项目量化', '能力定位'],
-    proof: ['两版简历项目描述', '10 个岗位 JD 拆解', '投递优先级表'],
-    interview: '讲清你从前端转 AI 的独特优势。'
-  },
-  {
-    week: 24,
-    phase: '毕业验收',
-    title: '最终答辩与下一阶段计划',
-    why: '最后一周不是学新知识，而是检查你是否真的能胜任新岗位。',
-    build: '完成一次 45 分钟项目答辩：架构、代码、评测、产品、失败和下一步。',
-    skills: ['答辩', '综合复盘', '能力矩阵', '下一阶段规划'],
-    proof: ['答辩稿', '能力矩阵', '下一阶段学习计划'],
-    interview: '这是把你送进面试状态的最后验收。'
+    phase: '阶段 5：求职验收',
+    title: '作品集、简历与 45 分钟项目答辩',
+    realProblem: '最终目标是换工作，所以你要把项目包装成招聘方能判断能力的证据，而不是一堆学习笔记。',
+    build: '整理作品集首页、三个核心项目页、简历项目描述、30 个面试追问和一次 45 分钟模拟答辩。',
+    frontendEntry: '作品集页面本身也要体现前端能力：结构清楚、交互顺、证据可点开。',
+    backendBasics: ['项目 README 标准', '架构图表达', '指标展示', '面试追问准备', '技术取舍复盘'],
+    skills: ['Portfolio', 'Resume', 'Interview', 'Architecture Storytelling', '项目答辩'],
+    codeTasks: [
+      '整理项目首页：问题、方案、架构、证据、失败和下一步。',
+      '写 AI Engineer 和 AI Product Engineer 两版简历项目描述。',
+      '准备 30 个追问，用自己的项目回答。',
+    ],
+    proof: ['作品集首页', '两版简历项目描述', '45 分钟模拟答辩稿'],
+    interview: '我能把前端经验转化成 AI 应用工程优势：体验、接口契约、状态机、可靠性、评测和产品边界。',
   },
 ]
 
@@ -263,8 +383,23 @@ function ensureDir(dir) {
   fs.mkdirSync(dir, { recursive: true })
 }
 
+function emptyDir(dir) {
+  if (fs.existsSync(dir)) {
+    fs.rmSync(dir, { recursive: true, force: true })
+  }
+  fs.mkdirSync(dir, { recursive: true })
+}
+
 function weekNumber(week) {
   return String(week).padStart(2, '0')
+}
+
+function list(items) {
+  return items.map((item) => `- ${item}`).join('\n')
+}
+
+function checklist(items) {
+  return items.map((item) => `- [ ] ${item}`).join('\n')
 }
 
 function makeWeekPage(item) {
@@ -273,30 +408,44 @@ function makeWeekPage(item) {
 
 阶段：${item.phase}
 
-## 为什么学这个
+## 为什么这周适合你
 
-${item.why}
+${item.realProblem}
+
+你是有经验的前端，所以本周不会停留在概念解释，而是从“一个真实 AI 功能如何进入现有前端系统”开始。
 
 ## 本周要构建什么
 
 ${item.build}
 
+## 前端切入点
+
+${item.frontendEntry}
+
+## 本周必须补的后端基础
+
+${list(item.backendBasics)}
+
 ## 本周核心能力
 
-${item.skills.map((skill) => `- ${skill}`).join('\n')}
+${list(item.skills)}
 
 ## 一周节奏（每天 2～3 小时）
 
 ${dayPlan
   .map(
-    ([day, title, desc]) =>
-      `- [Day ${day}：${title}](../lessons/week-${number}/day-${day}.md) — ${desc}`,
+    ({ day, title, goal }) =>
+      `- [Day ${day}：${title}](../lessons/week-${number}/day-${day}.md) — ${goal}`,
   )
   .join('\n')}
 
+## 本周代码任务
+
+${checklist(item.codeTasks)}
+
 ## 本周交付证据
 
-${item.proof.map((proof) => `- [ ] ${proof}`).join('\n')}
+${checklist(item.proof)}
 
 ## 面试讲法
 
@@ -304,45 +453,96 @@ ${item.interview}
 
 ## 通过标准
 
-- 能跑出最小闭环；
+- 能跑出端到端最小闭环；
+- 能说清前端、服务端、模型、数据各自边界；
 - 有失败样本和处理策略；
-- 有日志、截图、测试或评测证据；
-- 能用自己的项目解释这项能力；
-- 不把概念讲成空话。
+- 有日志、评测、截图、Trace 或架构图证据；
+- 能把本周能力写进作品集项目，而不是只背概念。
 `
 }
 
-function makeLessonPage(item, [day, title, desc]) {
-  const number = weekNumber(item.week)
-  const daySpecific = {
+function makeDayTasks(item, day) {
+  const handlers = {
     '01': [
-      '画出这项能力在前端、服务端、模型、数据之间的边界。',
-      '写出你认为最容易出问题的三个工程点。',
-      '列出本周不会做的事，避免范围失控。',
+      `用一句话写清楚真实问题：${item.realProblem}`,
+      '画出前端、服务端、模型 / 数据、验证层之间的边界。',
+      `写清楚前端切入点：${item.frontendEntry}`,
+      `列出本周必须补的后端基础：${item.backendBasics.join('、')}。`,
+      '列出本周不做什么，避免范围失控。',
     ],
     '02': [
-      '只实现一条最小链路，不做完整产品。',
-      '优先复用 demo-app 现有服务端和页面结构。',
-      '把关键输入、输出和错误状态打通。',
+      item.codeTasks[0],
+      '只跑通一条成功链路，不追求完整产品。',
+      '前端必须通过自己的服务端接口进入 AI 能力。',
+      '记录一次成功请求的输入、输出、requestId 或 Trace。',
     ],
     '03': [
-      '补充校验、日志、异常处理和用户可见反馈。',
-      '把魔法字符串、散落 Prompt 或临时逻辑收敛到可维护位置。',
-      '记录一次失败链路，不只记录成功链路。',
+      item.codeTasks[1],
+      `补一个后端基础点：${item.backendBasics.slice(0, 2).join(' / ')}。`,
+      '把错误、空结果、超时、非法参数或权限问题纳入服务端处理。',
+      '把用户可见错误文案和开发者日志区分开。',
     ],
     '04': [
+      item.codeTasks[2],
       '准备至少 10 条样本，覆盖正常、边界、失败和恶意输入。',
       '每次只改一个变量，记录结果差异。',
       '把失败归因到数据、检索、模型、代码或产品约束。',
     ],
     '05': [
-      '整理本周架构图、截图、日志和关键代码链接。',
-      '写一段三分钟面试讲法。',
-      '明确下周要继承和要丢弃的技术债。',
+      '整理本周架构图、关键代码、日志、截图和评测证据。',
+      '写一段 30 秒版本和 3 分钟版本的面试讲法。',
+      `用自己的项目表达这句话：${item.interview}`,
+      '明确下周要继承的代码和要还的技术债。',
     ],
-  }[day]
+  }
+  return handlers[day]
+}
 
-  return `# W${number} Day ${day}：${title}
+function makeSpecialIntro(item, day) {
+  if (item.week !== 1 || day !== '01') return ''
+
+  return `## 开课前先把四个词串起来
+
+你已经认识真实模型、RAG、Agent、MCP 这些名词，现在要解决的是“什么时候用谁，以及它们怎么串”。
+
+先用这个判断表：
+
+| 能力 | 解决什么问题 | 什么时候用 | 什么时候不要用 |
+| --- | --- | --- | --- |
+| 真实模型 | 生成、改写、总结、判断开放文本 | 任务需要语言理解或生成 | 需要确定事实但没有资料时 |
+| RAG | 先找资料，再基于资料回答 | 模型需要你的私有文档、接口契约、代码知识 | 只是改写语气、总结用户输入时 |
+| Tool / MCP | 让 AI 调用受控外部能力 | 需要查系统、读文件、调接口、执行动作 | 模型自己回答就够时 |
+| Agent | 根据中间结果动态决定下一步 | 流程不固定，需要多步查证 | 固定流程能完成时 |
+| Multi-Agent | 多个角色长期协作 | 大任务确实有不同职责和独立状态 | 一个 Agent 或 workflow 能完成时 |
+| Skill | 固化长期复用的做事规则 | 规则稳定、可复用、希望每次都遵守 | 临时任务或一次性业务参数 |
+
+最重要的口诀：
+
+\`\`\`text
+能写死流程，就不要 Agent；
+能一个 Agent 完成，就不要 Multi-Agent；
+需要执行动作，才做 Tool / MCP；
+需要查资料，才做 RAG；
+需要长期复用的做事规范，才放 Skill。
+\`\`\`
+
+以前端接口契约助手为例：
+
+- RAG：查接口文档、代码片段、历史需求；
+- Tool / MCP：提供 lookupApiField、searchCodeReference、readFile 这类受控工具；
+- Skill：字段不能猜、不允许多字段兜底、一个前端字段只对应一个明确后端字段；
+- Workflow / Agent：理解问题 -> 查契约 -> 查代码 -> 判断是否明确 -> 不明确追问 -> 明确给方案；
+- Multi-Agent：只有任务大到需要不同角色长期协作时才拆，例如接口契约 Agent、代码引用 Agent、测试风险 Agent。
+
+所以第一周先做 AI Gateway。它是后面所有能力的入口：没有稳定的模型调用边界，RAG、Agent、MCP 都只是能演示但不可靠的玩具。
+
+`
+}
+
+function makeLessonPage(item, dayItem) {
+  const number = weekNumber(item.week)
+  const tasks = makeDayTasks(item, dayItem.day)
+  return `# W${number} Day ${dayItem.day}：${dayItem.title}
 
 本周主题：${item.title}
 
@@ -350,51 +550,77 @@ function makeLessonPage(item, [day, title, desc]) {
 
 ## 今天的目标
 
-${desc}
+${dayItem.goal}
 
-## 今天不学什么
+${makeSpecialIntro(item, dayItem.day)}## 今天不学什么
 
 - 不学概念名词堆砌；
-- 不重复你已经具备的基础前端知识；
+- 不重复基础前端知识；
+- 不为了炫技引入暂时用不上的框架；
 - 不做和求职项目无关的玩具功能。
 
-## 任务背景
+## 真实任务背景
 
-${item.why}
+${item.realProblem}
 
 本周构建目标：
 
 > ${item.build}
 
+## 前端怎么入手
+
+${item.frontendEntry}
+
 ## 今天要完成
 
-${daySpecific.map((task) => `- [ ] ${task}`).join('\n')}
+${checklist(tasks)}
+
+## 今天要补的后端知识
+
+${list(item.backendBasics)}
+
+> 只补到能完成今天任务，不要求一次学成后端工程师。
 
 ## 工程约束
 
 - 每次只扩展一个明确能力；
-- 真实模型、RAG、Agent、MCP 相关能力必须留下可验证证据；
+- 前端不直接持有模型 API Key；
+- 服务端要处理失败、空响应、格式错误、超时和非法参数；
 - 不确定的接口字段、数据类型、业务含义不能猜；
-- 所有 AI 输出都要考虑失败、空响应、格式错误和内容不合格；
-- 结论优先沉淀通用规律，不把单个案例当成全部知识。
+- 涉及 RAG、Tool、Agent、MCP 的能力必须留下 Trace 或可验证证据；
+- 结论优先沉淀通用规律，不把单个 Demo 案例当成全部知识。
 
 ## 产出物
 
-${item.proof.map((proof) => `- ${proof}`).join('\n')}
+${list(item.proof)}
 
 ## 今日复盘问题
 
 1. 今天这项能力解决了真实 AI 项目里的什么问题？
-2. 它和普通前端 CRUD 最大的差异在哪里？
-3. 如果模型、检索或工具调用失败，用户会看到什么？
-4. 这项能力能怎样写进你的求职项目？
-5. 面试官追问时，你准备用哪个证据回答？
+2. 前端负责什么？服务端负责什么？模型或数据层负责什么？
+3. 今天补的后端知识为什么是必要的？
+4. 如果模型、检索或工具调用失败，用户会看到什么，开发者能看到什么？
+5. 这项能力能怎样写进你的求职项目？
 
 ## 写入位置
 
-把今天结论写入：
+把今天结论和你问我的问题写入：
+
+\`advanced-track/lessons/week-${number}/day-${dayItem.day}.md\`
+
+周总结写入：
 
 \`advanced-track/reviews/week-${number}.md\`
+
+## 学习问答记录
+
+### Q1：我学完今天后，最低通过标准是什么？
+
+直接结论：不是“看懂概念”，而是能跑出或画出一条可验证链路，并能解释失败时怎么处理。
+
+工程解释：AI 应用和普通 CRUD 最大的差异在于不确定性。模型可能慢、错、空、格式乱、成本高，所以每一天都必须留下运行证据或失败证据。
+
+对应知识点：端到端闭环、服务端边界、失败兜底、日志 / Trace、面试证据。
 `
 }
 
@@ -408,17 +634,30 @@ function makeReviewPage(item) {
 
 ## 本周完成的工程证据
 
-${item.proof.map((proof) => `- [ ] ${proof}`).join('\n')}
+${checklist(item.proof)}
+
+## 本周补齐的后端基础
+
+${item.backendBasics.map((basic) => `- [ ] ${basic}`).join('\n')}
 
 ## 核心架构图
 
 \`\`\`mermaid
 flowchart LR
-  A["User / UI"] --> B["Server Boundary"]
-  B --> C["AI Capability"]
-  C --> D["Validation / Eval"]
+  A["User / Vue UI"] --> B["Your Server API"]
+  B --> C["AI / RAG / Tool Layer"]
+  C --> D["Validation / Safety / Eval"]
   D --> E["User-visible Result"]
+  B --> F["Logs / Trace / Cost"]
 \`\`\`
+
+## 成功链路
+
+- 输入：
+- 服务端处理：
+- AI / 数据层处理：
+- 输出：
+- 证据：
 
 ## 失败案例
 
@@ -448,19 +687,32 @@ flowchart LR
 }
 
 function makeIndex() {
-  return `# 高级求职向 AI Engineer Track
+  return `# 前端老手转 AI 应用工程实战 Track
 
-适用对象：6～7 年前端经验，已有服务端基础，目标是能胜任 AI Product Engineer / AI Engineer / 偏技术 AI 产品岗位。
+适用对象：6～7 年前端经验，已有服务端基础，但缺少 AI 应用工程实战闭环。
 
-节奏：每天 2～3 小时，每周 5 天。总长度 24 周。可以压缩或拉长，不追求形式上的 48 周。
+目标岗位：AI Product Engineer / AI Application Engineer / 偏技术 AI 产品经理。
+
+节奏：每天 2～3 小时，每周 5 天。总长度 20 周。可以压缩或拉长，目标不是刷周数，而是拿到能面试的项目证据。
+
+## 这版课程为什么调整
+
+你已经不需要“Prompt 不同输出不同”这种入门内容。你真正缺的是：
+
+- 前端如何接入真实模型；
+- 哪些能力必须放服务端；
+- RAG、Tool、Agent、MCP 在一个项目里怎么串；
+- 如何做日志、评测、失败样本和作品集；
+- 如何把前端经验转成 AI 应用工程优势。
 
 ## 学习原则
 
-- 跳过 AI 科普和低价值 Prompt 常识；
-- 每周必须有工程证据；
-- 每个项目都要能被面试追问；
-- 技术学习服务于求职作品集；
-- 学不会不是看懂概念，而是做不出可验证闭环。
+- 每周做一个真实工程切片；
+- 每周补一个必要后端基础点；
+- 每天都要有代码、日志、Trace、评测或架构证据；
+- 不追求概念完整性，追求项目闭环；
+- 能写死流程就不使用 Agent，能一个 Agent 完成就不拆 Multi-Agent；
+- 涉及字段契约不猜测、不多字段兜底、不把模型回答当事实。
 
 ## 周计划
 
@@ -473,12 +725,12 @@ ${weeks
 
 ## 最终应具备的证据
 
-- 一个 AI Gateway / 模型调用工程底座；
-- 一个带评测集的结构化输出项目；
+- 一个真实模型 Gateway / Streaming / 结构化输出工程底座；
+- 一个带 Prompt Registry、日志和评测集的 AI 职场沟通助手；
 - 一个前端接口契约 RAG 助手；
-- 一个 Tool / Agent / MCP 综合 Demo；
-- 一个偏产品的 AI 睡眠或情绪教练 MVP；
-- 一套作品集、简历项目描述和模拟面试问答。
+- 一个 MCP + RAG + Tool + 受限 Agent 综合 Demo；
+- 一个偏产品方向的 AI 睡眠 / 情绪教练 MVP；
+- 一套作品集、简历项目描述、面试问答和 45 分钟答辩稿。
 `
 }
 
@@ -486,23 +738,23 @@ function getDemoMode(item) {
   const text = `${item.phase} ${item.title}`
   if (text.includes('Gateway')) return 'gateway'
   if (text.includes('Streaming')) return 'streaming'
-  if (text.includes('Schema') || text.includes('结构化')) return 'schema'
-  if (text.includes('Prompt Registry')) return 'prompt-registry'
+  if (text.includes('结构化')) return 'schema'
+  if (text.includes('Prompt')) return 'prompt-registry'
   if (text.includes('评测')) return 'eval'
-  if (text.includes('RAG') || text.includes('Embedding') || text.includes('Chunk') || text.includes('引用')) return 'rag'
-  if (text.includes('Tool Calling')) return 'tool'
+  if (text.includes('RAG') || text.includes('检索') || text.includes('Chunk') || text.includes('引用')) return 'rag'
+  if (text.includes('Tool Calling') || text.includes('写操作')) return 'tool'
   if (text.includes('Agent') || text.includes('Workflow')) return 'agent'
   if (text.includes('MCP')) return 'mcp'
-  if (text.includes('可观测')) return 'observability'
-  if (text.includes('安全') || text.includes('睡眠') || text.includes('情绪')) return 'product'
-  if (text.includes('作品集') || text.includes('面试') || text.includes('简历') || text.includes('答辩')) return 'portfolio'
+  if (text.includes('部署') || text.includes('监控') || text.includes('成本')) return 'observability'
+  if (text.includes('睡眠') || text.includes('情绪') || text.includes('产品边界')) return 'product'
+  if (text.includes('作品集') || text.includes('简历') || text.includes('答辩')) return 'portfolio'
   return 'engineering'
 }
 
 ensureDir(trackRoot)
-ensureDir(weeksRoot)
-ensureDir(lessonsRoot)
-ensureDir(reviewsRoot)
+emptyDir(weeksRoot)
+emptyDir(lessonsRoot)
+emptyDir(reviewsRoot)
 
 for (const item of weeks) {
   const number = weekNumber(item.week)
@@ -512,7 +764,7 @@ for (const item of weeks) {
   fs.writeFileSync(path.join(reviewsRoot, `week-${number}.md`), makeReviewPage(item))
   for (const day of dayPlan) {
     fs.writeFileSync(
-      path.join(weekLessonsRoot, `day-${day[0]}.md`),
+      path.join(weekLessonsRoot, `day-${day.day}.md`),
       makeLessonPage(item, day),
     )
   }
@@ -522,13 +774,13 @@ fs.writeFileSync(path.join(trackRoot, 'README.md'), makeIndex())
 
 const advancedLabs = weeks.flatMap((item) => {
   const number = weekNumber(item.week)
-  return dayPlan.map(([day, dayTitle, dayGoal]) => ({
+  return dayPlan.map(({ day, title, goal }) => ({
     id: `W${number}D${day}`,
     week: number,
     day,
     title: item.title,
-    dayTitle,
-    dayGoal,
+    dayTitle: title,
+    dayGoal: goal,
     phase: item.phase,
     path: `/advanced/week-${number}/day-${day}`,
     lessonPath: `/advanced-track/lessons/week-${number}/day-${day}.md`,
@@ -554,7 +806,7 @@ export const generatedAdvancedLabs: AdvancedLabDefinition[] = ${JSON.stringify(a
 )
 
 const advancedDaysRoot = path.join(advancedLabsRoot, 'days')
-ensureDir(advancedDaysRoot)
+emptyDir(advancedDaysRoot)
 
 for (const lab of advancedLabs) {
   const weekDir = path.join(advancedDaysRoot, `week-${lab.week}`)

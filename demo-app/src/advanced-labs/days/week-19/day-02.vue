@@ -6,27 +6,28 @@ const lab: AdvancedLabDefinition = {
   "id": "W19D02",
   "week": "19",
   "day": "02",
-  "title": "安全、隐私与高风险边界",
-  "dayTitle": "最小实现",
-  "dayGoal": "写一个能跑的薄切片，不追求大而全。",
-  "phase": "产品化与上线",
+  "title": "部署、监控与成本：作品集也要像真实项目",
+  "dayTitle": "最小代码闭环",
+  "dayGoal": "只写一条能跑通的端到端链路，优先把输入、服务端、模型或数据、输出串起来。",
+  "phase": "阶段 5：上线与作品集",
   "path": "/advanced/week-19/day-02",
   "lessonPath": "/advanced-track/lessons/week-19/day-02.md",
   "reviewPath": "/advanced-track/reviews/week-19.md",
-  "mode": "product",
-  "build": "为一个助手设计敏感数据最小化、危机场景升级、免责声明和拒答策略。",
+  "mode": "observability",
+  "build": "为核心项目整理部署方案和监控面板：环境变量、日志查看、错误率、延迟、token、成本估算。",
   "skills": [
-    "数据最小化",
-    "安全策略",
-    "危机升级",
-    "隐私删除"
+    "Deployment",
+    "Observability",
+    "Rate Limit",
+    "Cost",
+    "Incident Review"
   ],
   "proof": [
-    "安全边界文档",
-    "高风险样本测试",
-    "拒答截图"
+    "部署说明",
+    "监控 / 日志截图",
+    "一次故障复盘文档"
   ],
-  "interview": "讲清你如何避免 AI 产品伤害用户或制造合规风险。"
+  "interview": "我能讲 AI 功能上线后看哪些指标：延迟、错误、token、成本、质量抽样和用户反馈。"
 }
 </script>
 

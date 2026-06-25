@@ -6,27 +6,28 @@ const lab: AdvancedLabDefinition = {
   "id": "W04D04",
   "week": "04",
   "day": "04",
-  "title": "Prompt Registry、版本管理与灰度",
-  "dayTitle": "评测与失败分析",
-  "dayGoal": "构造样本集，记录失败原因，避免只看成功演示。",
-  "phase": "AI 应用工程底座",
+  "title": "Prompt Registry 与评测：不要把 Prompt 写成散落字符串",
+  "dayTitle": "失败样本与评测",
+  "dayGoal": "不要只看成功演示，构造失败样本，把问题归因到数据、模型、代码或产品边界。",
+  "phase": "阶段 1：AI 应用工程底座",
   "path": "/advanced/week-04/day-04",
   "lessonPath": "/advanced-track/lessons/week-04/day-04.md",
   "reviewPath": "/advanced-track/reviews/week-04.md",
   "mode": "prompt-registry",
-  "build": "实现 Prompt Registry：按 taskType 选择模板，记录版本、变更原因和回滚策略。",
+  "build": "实现 Prompt Registry：按 taskType 选择模板，记录版本和变更原因，并为职场改写功能建立第一批 30 条评测样本。",
   "skills": [
-    "Prompt 版本",
-    "任务路由",
-    "配置与代码分离",
-    "灰度/回滚"
+    "Prompt Registry",
+    "Prompt Version",
+    "Eval Dataset",
+    "回归测试",
+    "灰度 / 回滚"
   ],
   "proof": [
     "Prompt Registry 代码",
-    "版本变更记录",
-    "一次回归对比"
+    "30 条评测样本",
+    "v1 / v2 回归对比表"
   ],
-  "interview": "讲清为什么 Prompt 不是散落在代码里的字符串。"
+  "interview": "Prompt 在我的项目里不是玄学字符串，而是有任务路由、版本记录、评测集和回滚策略的工程配置。"
 }
 </script>
 

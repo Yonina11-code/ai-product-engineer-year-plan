@@ -6,27 +6,28 @@ const lab: AdvancedLabDefinition = {
   "id": "W20D01",
   "week": "20",
   "day": "01",
-  "title": "项目三：AI 睡眠/情绪教练 MVP",
-  "dayTitle": "架构判断",
-  "dayGoal": "读代码、画边界、明确这项能力解决什么工程问题。",
-  "phase": "项目三",
+  "title": "作品集、简历与 45 分钟项目答辩",
+  "dayTitle": "真实场景与边界",
+  "dayGoal": "先判断这个能力在真实产品里解决什么问题，以及前端、服务端、模型分别负责什么。",
+  "phase": "阶段 5：求职验收",
   "path": "/advanced/week-20/day-01",
   "lessonPath": "/advanced-track/lessons/week-20/day-01.md",
   "reviewPath": "/advanced-track/reviews/week-20.md",
-  "mode": "product",
-  "build": "完成一个非医疗化建议助手：日志录入、周总结、建议生成、安全提示。",
+  "mode": "portfolio",
+  "build": "整理作品集首页、三个核心项目页、简历项目描述、30 个面试追问和一次 45 分钟模拟答辩。",
   "skills": [
-    "产品定义",
-    "个性化上下文",
-    "非医疗边界",
-    "用户反馈"
+    "Portfolio",
+    "Resume",
+    "Interview",
+    "Architecture Storytelling",
+    "项目答辩"
   ],
   "proof": [
-    "可演示 MVP",
-    "10 条用户反馈",
-    "安全样本测试"
+    "作品集首页",
+    "两版简历项目描述",
+    "45 分钟模拟答辩稿"
   ],
-  "interview": "讲清你怎么判断一个 AI 产品是否真的需要 AI。"
+  "interview": "我能把前端经验转化成 AI 应用工程优势：体验、接口契约、状态机、可靠性、评测和产品边界。"
 }
 </script>
 

@@ -6,27 +6,28 @@ const lab: AdvancedLabDefinition = {
   "id": "W13D04",
   "week": "13",
   "day": "04",
-  "title": "Tool Calling：只读工具、写工具与权限边界",
-  "dayTitle": "评测与失败分析",
-  "dayGoal": "构造样本集，记录失败原因，避免只看成功演示。",
-  "phase": "工具调用与 Agent",
+  "title": "写操作边界：确认、幂等与审计",
+  "dayTitle": "失败样本与评测",
+  "dayGoal": "不要只看成功演示，构造失败样本，把问题归因到数据、模型、代码或产品边界。",
+  "phase": "阶段 3：Tool / Agent / MCP",
   "path": "/advanced/week-13/day-04",
   "lessonPath": "/advanced-track/lessons/week-13/day-04.md",
   "reviewPath": "/advanced-track/reviews/week-13.md",
   "mode": "tool",
-  "build": "实现查询类工具和写操作工具，加入参数校验、权限判断、用户确认。",
+  "build": "实现一个模拟写工具 createDevTask，只允许生成待确认任务，不允许模型直接提交最终结果。",
   "skills": [
-    "Tool Schema",
-    "参数校验",
-    "只读/写操作",
-    "用户确认"
+    "Write Tool",
+    "Human Confirmation",
+    "Idempotency",
+    "Audit Log",
+    "副作用边界"
   ],
   "proof": [
-    "两个工具定义",
-    "写操作确认流程",
-    "异常参数测试"
+    "写操作确认流程截图",
+    "重复提交防护日志",
+    "审计日志样例"
   ],
-  "interview": "讲清为什么不能相信模型生成的工具参数。"
+  "interview": "我会把只读工具和写工具分开，写操作必须用户确认、幂等防重复，并留下审计日志。"
 }
 </script>
 
