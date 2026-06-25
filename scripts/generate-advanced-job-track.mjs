@@ -751,6 +751,170 @@ function getDemoMode(item) {
   return 'engineering'
 }
 
+function getModeFiles(mode) {
+  const files = {
+    gateway: [
+      'demo-app/server/index.js',
+      'demo-app/server/ai-gateway/handleChat.js',
+      'demo-app/server/providers/mockProvider.js',
+      'demo-app/server/providers/deepseekProvider.js',
+      '.env',
+    ],
+    streaming: [
+      'demo-app/server/index.js',
+      'demo-app/server/streaming/streamResponse.js',
+      'demo-app/server/streaming/abortController.js',
+    ],
+    schema: [
+      'demo-app/server/schemas/rewriteResult.js',
+      'demo-app/server/services/repairModelOutput.js',
+      'demo-app/server/services/validateModelOutput.js',
+    ],
+    'prompt-registry': [
+      'demo-app/server/prompts/registry.js',
+      'demo-app/server/evals/workplace-rewrite.cases.json',
+      'demo-app/server/evals/runEval.js',
+    ],
+    eval: [
+      'demo-app/server/evals/cases.json',
+      'demo-app/server/evals/runEval.js',
+      'advanced-track/reviews/',
+    ],
+    rag: [
+      'demo-app/server/rag/ingest.js',
+      'demo-app/server/rag/search.js',
+      'demo-app/server/rag/answer.js',
+      'demo-app/server/rag/eval-cases.json',
+    ],
+    tool: [
+      'demo-app/server/tools/registry.js',
+      'demo-app/server/tools/auditLog.js',
+      'demo-app/server/tools/validateToolInput.js',
+    ],
+    agent: [
+      'demo-app/server/agent/workflow.js',
+      'demo-app/server/agent/agentLoop.js',
+      'demo-app/server/agent/trace.js',
+    ],
+    mcp: [
+      'demo-app/mcp/server.js',
+      'demo-app/mcp/tools/lookupApiField.js',
+      'demo-app/mcp/resources/apiDocs.js',
+    ],
+    observability: [
+      'demo-app/server/logs/aiCallLogs.js',
+      'demo-app/server/metrics/cost.js',
+      'demo-app/server/metrics/latency.js',
+    ],
+    product: [
+      'demo-app/server/product/safetyPolicy.js',
+      'demo-app/server/product/userLogs.js',
+      'demo-app/server/product/riskClassifier.js',
+    ],
+    portfolio: [
+      'portfolio/',
+      'advanced-track/reviews/',
+      'README.md',
+    ],
+    engineering: [
+      'demo-app/server/index.js',
+      'demo-app/server/shared/',
+    ],
+  }
+
+  return files[mode] ?? files.engineering
+}
+
+function makeFlowSteps(item, dayItem, mode) {
+  const dayFlows = {
+    '01': [
+      `从真实问题开始：${item.realProblem}`,
+      `确认前端入口：${item.frontendEntry}`,
+      '画出 UI -> Server API -> AI / Data Layer -> Validation -> Result 的边界。',
+      `打开本日课程文件：advanced-track/lessons/week-${weekNumber(item.week)}/day-${dayItem.day}.md。`,
+      '本日不急着写完整功能，先确认这条链路为什么必须存在。',
+    ],
+    '02': [
+      '从当天 Vue 页面触发一次用户输入。',
+      '前端调用自己的服务端 API，而不是直接请求模型供应商。',
+      `服务端执行第一条代码任务：${item.codeTasks[0]}`,
+      '服务端返回统一响应，前端展示成功或失败状态。',
+      '记录一次成功链路的 requestId / Trace / Network 证据。',
+    ],
+    '03': [
+      `继续执行第二条代码任务：${item.codeTasks[1]}`,
+      `补后端基础：${item.backendBasics.slice(0, 2).join(' / ')}。`,
+      '给空输入、非法参数、超时、Provider 异常增加服务端处理。',
+      '前端只展示用户能理解的错误，开发日志保留技术细节。',
+      '确认失败链路不会让页面卡死或吞掉用户输入。',
+    ],
+    '04': [
+      `继续执行第三条代码任务：${item.codeTasks[2]}`,
+      '准备至少 10 条正常、边界、失败和恶意输入。',
+      '运行样本并记录每条结果。',
+      '把失败归因到数据、检索、模型、代码或产品边界。',
+      '只改一个变量再复测，避免不知道是哪次修改生效。',
+    ],
+    '05': [
+      '收集本周架构图、关键代码、日志、Trace、截图或评测报告。',
+      '把本周能力写成 30 秒版本和 3 分钟版本。',
+      `围绕这句话组织面试表达：${item.interview}`,
+      '标记下周要继承的代码和暂时不处理的技术债。',
+      '如果没有可验证证据，本周不算通过。',
+    ],
+  }
+
+  const modeReminder = {
+    gateway: '重点看 API Key 是否只在服务端，以及 Provider 错误是否被统一归类。',
+    streaming: '重点看流式状态是否可取消、可重试、可恢复。',
+    schema: '重点看模型输出是否先过 Schema，再进入页面。',
+    'prompt-registry': '重点看 Prompt 是否从业务代码中抽离，并能按版本评测。',
+    eval: '重点看评测样本是否能重复运行，而不是手工感觉。',
+    rag: '重点看答案是否有证据来源，证据不足是否拒答。',
+    tool: '重点看工具参数是否校验，写操作是否需要确认。',
+    agent: '重点看 Agent 是否有 maxSteps、终止条件和可回放 Trace。',
+    mcp: '重点看 MCP 暴露的是最小工具和资源，不是把系统全开放。',
+    observability: '重点看 requestId、耗时、token、成本和错误类型是否能串起来。',
+    product: '重点看安全边界、隐私最小化和高风险输入处理。',
+    portfolio: '重点看证据是否能被面试官快速检查。',
+    engineering: '重点看端到端链路是否清楚。',
+  }
+
+  return [...dayFlows[dayItem.day], modeReminder[mode]]
+}
+
+function makeAcceptanceChecks(item, dayItem) {
+  const common = [
+    '页面能说明今天的代码流程，而不是只展示概念。',
+    '能指出至少一个服务端边界。',
+  ]
+
+  const dayChecks = {
+    '01': [
+      '能画出边界图。',
+      '能说清今天为什么不是纯前端功能。',
+    ],
+    '02': [
+      '能跑通一条成功链路。',
+      '能在 Network 或日志里找到一次请求证据。',
+    ],
+    '03': [
+      '能触发至少一个失败分支。',
+      '用户提示和开发日志没有混在一起。',
+    ],
+    '04': [
+      '至少记录 10 条样本。',
+      '每个失败都有归因。',
+    ],
+    '05': [
+      '能讲出 30 秒版本。',
+      '有本周可检查证据。',
+    ],
+  }
+
+  return [...common, ...dayChecks[dayItem.day], `本周证据至少推进一项：${item.proof[0]}`]
+}
+
 ensureDir(trackRoot)
 emptyDir(weeksRoot)
 emptyDir(lessonsRoot)
@@ -774,23 +938,35 @@ fs.writeFileSync(path.join(trackRoot, 'README.md'), makeIndex())
 
 const advancedLabs = weeks.flatMap((item) => {
   const number = weekNumber(item.week)
-  return dayPlan.map(({ day, title, goal }) => ({
-    id: `W${number}D${day}`,
-    week: number,
-    day,
-    title: item.title,
-    dayTitle: title,
-    dayGoal: goal,
-    phase: item.phase,
-    path: `/advanced/week-${number}/day-${day}`,
-    lessonPath: `/advanced-track/lessons/week-${number}/day-${day}.md`,
-    reviewPath: `/advanced-track/reviews/week-${number}.md`,
-    mode: getDemoMode(item),
-    build: item.build,
-    skills: item.skills,
-    proof: item.proof,
-    interview: item.interview,
-  }))
+  return dayPlan.map((dayItem) => {
+    const mode = getDemoMode(item)
+    return {
+      id: `W${number}D${dayItem.day}`,
+      week: number,
+      day: dayItem.day,
+      title: item.title,
+      dayTitle: dayItem.title,
+      dayGoal: dayItem.goal,
+      phase: item.phase,
+      path: `/advanced/week-${number}/day-${dayItem.day}`,
+      apiPath: `/api/advanced/week-${number}/day-${dayItem.day}`,
+      lessonPath: `/advanced-track/lessons/week-${number}/day-${dayItem.day}.md`,
+      reviewPath: `/advanced-track/reviews/week-${number}.md`,
+      mode,
+      build: item.build,
+      skills: item.skills,
+      proof: item.proof,
+      interview: item.interview,
+      flowSteps: makeFlowSteps(item, dayItem, mode),
+      codeFiles: [
+        `demo-app/src/advanced-labs/days/week-${number}/day-${dayItem.day}.vue`,
+        `demo-app/server/advanced-labs/week-${number}/day-${dayItem.day}.js`,
+        ...getModeFiles(mode),
+      ],
+      backendFocus: item.backendBasics,
+      acceptanceChecks: makeAcceptanceChecks(item, dayItem),
+    }
+  })
 })
 
 const advancedLabsRoot = path.join(root, 'demo-app', 'src', 'advanced-labs')
@@ -808,24 +984,802 @@ export const generatedAdvancedLabs: AdvancedLabDefinition[] = ${JSON.stringify(a
 const advancedDaysRoot = path.join(advancedLabsRoot, 'days')
 emptyDir(advancedDaysRoot)
 
+function makeStandaloneAdvancedLabVue(lab) {
+  return `<script setup lang="ts">
+import { ref } from 'vue'
+
+type TraceStatus = 'success' | 'warning' | 'blocked'
+
+interface TraceItem {
+  step: string
+  status: TraceStatus
+  detail: string
+}
+
+const lab = ${JSON.stringify(lab, null, 2)}
+
+const input = ref('')
+const secondaryInput = ref('')
+const strictMode = ref(true)
+const output = ref('')
+const trace = ref<TraceItem[]>([])
+const isRunning = ref(false)
+const errorMessage = ref('')
+
+const modeNames: Record<string, string> = {
+  gateway: 'AI Gateway 工程台',
+  streaming: 'Streaming 体验台',
+  schema: '结构化输出实验台',
+  'prompt-registry': 'Prompt Registry 实验台',
+  eval: '评测与质量门禁实验台',
+  rag: 'RAG 工程实验台',
+  tool: 'Tool Calling 权限实验台',
+  agent: 'Agent Trace 实验台',
+  mcp: 'MCP Server 实验台',
+  observability: '可观测性实验台',
+  product: '产品安全边界实验台',
+  portfolio: '作品集面试实验台',
+  engineering: 'AI 工程实验台',
+}
+
+const inputLabels: Record<string, string> = {
+  gateway: '模型调用场景',
+  streaming: '用户生成请求',
+  schema: '模型原始输出',
+  'prompt-registry': '任务类型与变更说明',
+  eval: '待评测样本或输出',
+  rag: '用户问题或文档片段',
+  tool: '用户想执行的任务',
+  agent: 'Agent 目标',
+  mcp: 'MCP 工具参数',
+  observability: '线上异常现象',
+  product: '用户场景和风险',
+  portfolio: '项目经历描述',
+  engineering: '工程问题描述',
+}
+
+const placeholders: Record<string, string> = {
+  gateway: '例如：用户请求 DeepSeek 改写一句工作消息，要求 8 秒超时、失败可降级。',
+  streaming: '例如：生成一段较长建议，用户可能中途取消。',
+  schema: '{"rewrittenText":"","reason":"缺少原文"}',
+  'prompt-registry': '例如：workplace_rewrite v2 增加“不承诺排期”约束。',
+  eval: '例如：我们保证下周一上线新方案。',
+  rag: '例如：v2 用户详情接口的姓名字段是什么？',
+  tool: '例如：提交删除用户 1001 的请求。',
+  agent: '例如：根据接口契约生成开发清单，并标出未知字段。',
+  mcp: '{"fieldName":"userName","version":"v2"}',
+  observability: '例如：P95 延迟从 3 秒涨到 11 秒，错误率 8%。',
+  product: '例如：用户连续失眠并询问是否需要吃药。',
+  portfolio: '例如：我做了一个 RAG 助手，可以查询接口字段。',
+  engineering: '描述今天要验证的 AI 工程问题。',
+}
+
+const modeName = modeNames[lab.mode] ?? 'AI 工程实验台'
+const inputLabel = inputLabels[lab.mode] ?? '工程问题描述'
+const placeholder = placeholders[lab.mode] ?? '描述今天要验证的 AI 工程问题。'
+
+function push(step: string, status: TraceStatus, detail: string) {
+  trace.value.push({ step, status, detail })
+}
+
+function runGatewayDemo() {
+  push('页面入口', 'success', '用户先在当天页面输入模型调用场景。')
+  push('服务端边界', 'success', '前端只请求 /api/ai/chat，API Key 不进入浏览器。')
+  push('Provider 分发', strictMode.value ? 'success' : 'warning', '服务端决定 mock / deepseek，并统一响应结构。')
+  push('失败处理', input.value.includes('超时') ? 'warning' : 'success', '无 Key、超时、Provider 错误都要归类。')
+  output.value = '今天重点不是 UI，而是看清 UI -> Server API -> Provider -> 统一响应的边界。'
+}
+
+function runStreamingDemo() {
+  push('用户输入', 'success', '页面保留原始输入，避免取消后丢失。')
+  push('服务端流', 'success', 'SSE 逐段返回内容，前端不等完整结果。')
+  push('取消生成', input.value.includes('取消') ? 'success' : 'warning', '需要 AbortController 或等价取消机制。')
+  push('状态机', 'success', 'idle -> streaming -> done / cancelled / failed。')
+  output.value = 'Streaming 的核心是体验状态可控，不是单纯把文字一点点显示出来。'
+}
+
+function runSchemaDemo() {
+  try {
+    const parsed = JSON.parse(input.value || '{}')
+    const hasText = typeof parsed?.rewrittenText === 'string' && parsed.rewrittenText.trim()
+    push('JSON 解析', 'success', '模型原始输出至少是可解析 JSON。')
+    push('字段校验', hasText ? 'success' : 'blocked', hasText ? 'rewrittenText 有效。' : '缺少有效 rewrittenText。')
+    push('业务入口', hasText ? 'success' : 'warning', '只有校验后的结果才能进入页面展示。')
+    output.value = hasText ? '结构化输出通过最小校验。' : '模型有返回，但业务不可用，需要 repair 或降级。'
+  } catch {
+    push('JSON 解析', 'blocked', '模型输出不是合法 JSON。')
+    output.value = '这类失败必须在服务端拦截，不能直接交给前端渲染。'
+  }
+}
+
+function runPromptRegistryDemo() {
+  const hasVersion = /v\\d+/i.test(input.value)
+  push('任务路由', input.value.includes('task') || input.value.includes('任务') ? 'success' : 'warning', '前端传 taskType，不传完整 Prompt。')
+  push('版本记录', hasVersion ? 'success' : 'warning', 'Prompt 变更必须有版本号和原因。')
+  push('回归评测', 'success', '每次改 Prompt 都要跑样本集。')
+  output.value = 'Prompt Registry 解决的是可维护性、回滚和质量门禁。'
+}
+
+function runEvalDemo() {
+  const risky = /(保证|一定|下周|本周五|诊断|删除)/.test(input.value)
+  push('样本覆盖', input.value.trim() ? 'success' : 'warning', '至少要覆盖真实用户输入。')
+  push('风险样本', risky ? 'blocked' : 'success', risky ? '命中高风险表达，需要复核。' : '当前没有命中简单风险词。')
+  push('质量门禁', 'success', '升级模型或 Prompt 前后要对比指标。')
+  output.value = '评测让 AI 功能从“感觉不错”变成可回归证据。'
+}
+
+function runRagDemo() {
+  const asksEvidence = /(字段|接口|来源|引用|证据)/.test(input.value)
+  push('查询理解', input.value.trim() ? 'success' : 'warning', '用户问题要转换成可检索查询。')
+  push('召回证据', asksEvidence ? 'success' : 'warning', '候选 chunk 必须带 metadata 和来源。')
+  push('拒答边界', strictMode.value ? 'success' : 'warning', '证据不足就拒答，不让模型补字段。')
+  output.value = 'RAG 页面要看证据、引用和拒答，不是只看最终回答像不像。'
+}
+
+function runToolDemo() {
+  const write = /(提交|删除|修改|创建|发送)/.test(input.value)
+  push('工具意图', 'success', write ? '识别为写操作。' : '识别为只读查询。')
+  push('参数校验', input.value.trim() ? 'success' : 'blocked', '模型生成的工具参数不能直接信任。')
+  push('确认边界', write ? 'blocked' : 'success', write ? '写操作必须二次确认。' : '只读操作可以直接返回 Trace。')
+  output.value = write ? '工具调用被拦截：有副作用操作必须用户确认。' : '只读工具可以执行，但仍然要记录 Trace。'
+}
+
+function runAgentDemo() {
+  push('任务拆解', 'success', '理解目标 -> 选择工具 -> 执行 -> 检查证据 -> 输出。')
+  push('终止条件', strictMode.value ? 'success' : 'warning', '需要 maxSteps、成功条件和失败条件。')
+  push('Trace 回放', 'success', '每一步都要留下输入、工具、结果和判断。')
+  output.value = 'Agent 的核心不是自由，而是可观察、可终止、可回放。'
+}
+
+function runMcpDemo() {
+  try {
+    JSON.parse(input.value || '{}')
+    push('参数 Schema', 'success', 'MCP Tool 参数必须先过 Schema。')
+    push('服务端边界', 'success', '模型只能请求调用，真正权限在 MCP Server。')
+    push('资源最小化', strictMode.value ? 'success' : 'warning', '只暴露任务需要的最小资源。')
+    output.value = 'MCP 页面要看工具契约、权限和资源边界。'
+  } catch {
+    push('参数 Schema', 'blocked', '参数不是有效 JSON。')
+    output.value = 'MCP Server 应拒绝非法参数，真实业务函数不能执行。'
+  }
+}
+
+function runObservabilityDemo() {
+  push('requestId', 'success', '用户反馈问题时可以定位到一次调用。')
+  push('性能与成本', /(P95|秒|延迟|成本|token)/i.test(input.value) ? 'warning' : 'success', '记录耗时、token、provider 和错误类型。')
+  push('质量抽样', 'success', '线上不能只看 200 状态码，还要看内容质量。')
+  output.value = 'AI 可观测性要同时看性能、成本、错误和质量。'
+}
+
+function runProductDemo() {
+  const highRisk = /(药|诊断|自杀|伤害|治疗|抑郁)/.test(input.value)
+  push('用户场景', input.value.trim() ? 'success' : 'warning', '先明确目标用户和使用边界。')
+  push('AI 必要性', secondaryInput.value.trim() ? 'success' : 'warning', '说明为什么规则或普通表单不够。')
+  push('安全边界', highRisk ? 'blocked' : 'success', highRisk ? '触发高风险边界，需要拒答或升级。' : '当前未命中高风险词。')
+  output.value = '偏产品项目要证明你能定义边界，不只是生成温柔文案。'
+}
+
+function runPortfolioDemo() {
+  const signals = ['问题', '架构', '评测', '失败', '成本', '结果']
+  const found = signals.filter((signal) => input.value.includes(signal))
+  for (const signal of signals) {
+    push(signal, found.includes(signal) ? 'success' : 'warning', found.includes(signal) ? '已有证据。' : '建议补充。')
+  }
+  output.value = '作品集要用证据讲，不堆技术名词。'
+}
+
+async function runDemo() {
+  trace.value = []
+  output.value = ''
+  errorMessage.value = ''
+  isRunning.value = true
+
+  try {
+    const response = await fetch(lab.apiPath, {
+      method: 'POST',
+      headers: {
+        'Content-Type': 'application/json',
+      },
+      body: JSON.stringify({
+        input: input.value,
+        secondaryInput: secondaryInput.value,
+        strictMode: strictMode.value,
+      }),
+    })
+
+    const data = await response.json()
+
+    if (!response.ok) {
+      throw new Error(data?.message || '当天服务端 Demo 执行失败。')
+    }
+
+    trace.value = data.trace ?? []
+    output.value = data.output ?? ''
+  } catch (error) {
+    errorMessage.value =
+      error instanceof Error ? error.message : '当天服务端 Demo 执行失败。'
+    trace.value = [
+      {
+        step: '服务端请求',
+        status: 'blocked',
+        detail: errorMessage.value,
+      },
+    ]
+    output.value = '请确认 npm run demo 已启动，且当天服务端接口存在。'
+  } finally {
+    isRunning.value = false
+  }
+}
+</script>
+
+<template>
+  <section class="advanced-lab-page">
+    <RouterLink class="back-link" to="/">← 返回高级 Demo 列表</RouterLink>
+
+    <header class="hero">
+      <div>
+        <p class="eyebrow">W{{ lab.week }} · Day {{ lab.day }} · {{ lab.phase }}</p>
+        <h1>{{ lab.title }}</h1>
+        <p>{{ lab.dayTitle }}：{{ lab.dayGoal }}</p>
+      </div>
+      <div class="mode-badge">{{ modeName }}</div>
+    </header>
+
+    <section class="flow-panel">
+      <div class="flow-title">
+        <div>
+          <p class="eyebrow">TODAY CODE FLOW</p>
+          <h2>今天这个页面背后的代码流程</h2>
+        </div>
+        <span>本页面请求当天独立服务端接口：{{ lab.apiPath }}</span>
+      </div>
+
+      <div class="flow-grid">
+        <article class="card main-flow">
+          <h3>执行链路</h3>
+          <ol>
+            <li v-for="step in lab.flowSteps" :key="step">{{ step }}</li>
+          </ol>
+        </article>
+
+        <article class="card">
+          <h3>重点文件</h3>
+          <ul>
+            <li v-for="file in lab.codeFiles" :key="file"><code>{{ file }}</code></li>
+          </ul>
+        </article>
+
+        <article class="card">
+          <h3>后端补点</h3>
+          <ul>
+            <li v-for="item in lab.backendFocus" :key="item">{{ item }}</li>
+          </ul>
+        </article>
+
+        <article class="card">
+          <h3>验收动作</h3>
+          <ul>
+            <li v-for="item in lab.acceptanceChecks" :key="item">{{ item }}</li>
+          </ul>
+        </article>
+      </div>
+    </section>
+
+    <div class="workbench">
+      <section class="card control">
+        <h2>本日 Demo 输入</h2>
+
+        <label>
+          <span>{{ inputLabel }}</span>
+          <textarea v-model="input" rows="6" :placeholder="placeholder" />
+        </label>
+
+        <label v-if="lab.mode === 'product'" class="extra-field">
+          <span>为什么 AI 是必要的？</span>
+          <textarea
+            v-model="secondaryInput"
+            rows="3"
+            placeholder="说明普通规则、表单或人工流程为什么不足"
+          />
+        </label>
+
+        <label class="inline-control">
+          <input v-model="strictMode" type="checkbox" />
+          <span>启用严格工程边界</span>
+        </label>
+
+        <button type="button" :disabled="isRunning" @click="runDemo">
+          {{ isRunning ? '运行中...' : \`运行 W\${lab.week} D\${lab.day} Demo\` }}
+        </button>
+      </section>
+
+      <aside class="card task">
+        <h2>今天要证明什么</h2>
+        <p>{{ lab.build }}</p>
+        <h3>课程文件</h3>
+        <p>{{ lab.lessonPath }}</p>
+        <h3>复盘文件</h3>
+        <p>{{ lab.reviewPath }}</p>
+        <h3>本周证据</h3>
+        <ul>
+          <li v-for="item in lab.proof" :key="item">{{ item }}</li>
+        </ul>
+        <h3>面试表达</h3>
+        <p>{{ lab.interview }}</p>
+      </aside>
+    </div>
+
+    <section v-if="trace.length || output" class="card result">
+      <h2>运行证据</h2>
+      <div class="trace-grid">
+        <article
+          v-for="item in trace"
+          :key="\`\${item.step}-\${item.detail}\`"
+          class="trace-card"
+          :class="item.status"
+        >
+          <strong>{{ item.step }}</strong>
+          <p>{{ item.detail }}</p>
+        </article>
+      </div>
+      <div v-if="output" class="output-box">
+        <strong>工程结论</strong>
+        <p>{{ output }}</p>
+      </div>
+    </section>
+  </section>
+</template>
+
+<style scoped>
+.advanced-lab-page {
+  display: grid;
+  gap: 24px;
+}
+
+.back-link {
+  width: fit-content;
+  color: #5265d8;
+  text-decoration: none;
+}
+
+.hero,
+.flow-title {
+  display: flex;
+  align-items: end;
+  justify-content: space-between;
+  gap: 24px;
+}
+
+.hero > div:first-child {
+  max-width: 840px;
+}
+
+.eyebrow {
+  margin: 0 0 8px;
+  color: #5769d8;
+  font-size: 13px;
+  font-weight: 900;
+  letter-spacing: 0.08em;
+}
+
+h1 {
+  margin: 0;
+  font-size: clamp(30px, 5vw, 46px);
+}
+
+h2,
+h3 {
+  margin-top: 0;
+}
+
+.hero p:last-child,
+.task p,
+.task li,
+.card li {
+  color: #657086;
+  line-height: 1.7;
+}
+
+.mode-badge {
+  flex: none;
+  padding: 10px 14px;
+  border-radius: 999px;
+  color: #4354c6;
+  background: #edf0ff;
+  font-weight: 800;
+}
+
+.card,
+.flow-panel {
+  padding: 24px;
+  border: 1px solid #e2e6ef;
+  border-radius: 18px;
+  background: #fff;
+  box-shadow: 0 18px 50px rgba(30, 46, 80, 0.06);
+}
+
+.flow-panel {
+  display: grid;
+  gap: 18px;
+}
+
+.flow-title span {
+  color: #657086;
+  font-size: 13px;
+}
+
+.flow-grid {
+  display: grid;
+  grid-template-columns: minmax(0, 1.3fr) minmax(220px, 0.8fr);
+  gap: 14px;
+}
+
+.flow-grid .card {
+  padding: 18px;
+  background: #f8f9fc;
+  box-shadow: none;
+}
+
+.main-flow {
+  grid-row: span 3;
+  background: #f3f5ff !important;
+}
+
+ol,
+ul {
+  margin: 0;
+  padding-left: 20px;
+}
+
+code {
+  color: #4354c6;
+  font-size: 12px;
+  word-break: break-all;
+}
+
+.workbench {
+  display: grid;
+  grid-template-columns: minmax(0, 1fr) 360px;
+  gap: 20px;
+  align-items: start;
+}
+
+.control {
+  display: grid;
+  gap: 20px;
+}
+
+label {
+  display: grid;
+  gap: 8px;
+  font-weight: 700;
+}
+
+textarea {
+  width: 100%;
+  padding: 13px 14px;
+  border: 1px solid #cfd5e2;
+  border-radius: 10px;
+  resize: vertical;
+  font: inherit;
+  line-height: 1.6;
+}
+
+.inline-control {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+}
+
+.inline-control input {
+  width: 18px;
+  height: 18px;
+}
+
+button {
+  border: 0;
+  border-radius: 10px;
+  padding: 13px 18px;
+  color: #fff;
+  background: #5365d8;
+  cursor: pointer;
+  font: inherit;
+  font-weight: 800;
+}
+
+.task {
+  position: sticky;
+  top: 92px;
+}
+
+.task h3 {
+  margin: 22px 0 8px;
+}
+
+.trace-grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(220px, 1fr));
+  gap: 12px;
+}
+
+.trace-card {
+  padding: 16px;
+  border: 1px solid #e1e5ee;
+  border-radius: 12px;
+  background: #f8f9fc;
+}
+
+.trace-card p {
+  margin-bottom: 0;
+  color: #657086;
+  line-height: 1.6;
+}
+
+.trace-card.success {
+  border-color: #bfe6d2;
+  background: #f1fbf6;
+}
+
+.trace-card.warning {
+  border-color: #f0d4a9;
+  background: #fff8ed;
+}
+
+.trace-card.blocked {
+  border-color: #f0bdc3;
+  background: #fff3f4;
+}
+
+.output-box {
+  margin-top: 16px;
+  padding: 18px;
+  border-radius: 12px;
+  background: #edf0ff;
+}
+
+.output-box p {
+  margin-bottom: 0;
+  line-height: 1.7;
+}
+
+@media (max-width: 900px) {
+  .workbench,
+  .flow-grid {
+    grid-template-columns: 1fr;
+  }
+
+  .main-flow {
+    grid-row: auto;
+  }
+
+  .task {
+    position: static;
+  }
+}
+
+@media (max-width: 640px) {
+  .hero,
+  .flow-title {
+    align-items: start;
+    flex-direction: column;
+  }
+}
+</style>
+`
+}
+
+function handlerNameFor(lab) {
+  return `handleAdvancedW${lab.week}D${lab.day}`
+}
+
+function makeStandaloneAdvancedServerHandler(lab) {
+  const handlerName = handlerNameFor(lab)
+
+  return `const lab = ${JSON.stringify(lab, null, 2)}
+
+function push(trace, step, status, detail) {
+  trace.push({ step, status, detail })
+}
+
+function buildGatewayResult({ trace, input, strictMode }) {
+  const shouldInspectFailureBoundary = Boolean(input.trim())
+  push(trace, '页面入口', 'success', '用户先在当天页面输入模型调用场景。')
+  push(trace, '服务端边界', 'success', '前端请求当天独立接口，API Key 不进入浏览器。')
+  push(trace, 'Provider 分发', strictMode ? 'success' : 'warning', '服务端决定 mock / deepseek，并统一响应结构。')
+  push(trace, '失败处理', shouldInspectFailureBoundary ? 'warning' : 'success', '无 Key、超时、Provider 错误都要归类。')
+  return '今天重点不是 UI，而是看清 UI -> Day API -> Provider -> 统一响应的边界。'
+}
+
+function buildStreamingResult({ trace, input }) {
+  push(trace, '用户输入', 'success', '页面保留原始输入，避免取消后丢失。')
+  push(trace, '服务端流', 'success', 'SSE 逐段返回内容，前端不等完整结果。')
+  push(trace, '取消生成', input.includes('取消') ? 'success' : 'warning', '需要 AbortController 或等价取消机制。')
+  push(trace, '状态机', 'success', 'idle -> streaming -> done / cancelled / failed。')
+  return 'Streaming 的核心是体验状态可控，不是单纯把文字一点点显示出来。'
+}
+
+function buildSchemaResult({ trace, input }) {
+  try {
+    const parsed = JSON.parse(input || '{}')
+    const hasText = typeof parsed?.rewrittenText === 'string' && parsed.rewrittenText.trim()
+    push(trace, 'JSON 解析', 'success', '模型原始输出至少是可解析 JSON。')
+    push(trace, '字段校验', hasText ? 'success' : 'blocked', hasText ? 'rewrittenText 有效。' : '缺少有效 rewrittenText。')
+    push(trace, '业务入口', hasText ? 'success' : 'warning', '只有校验后的结果才能进入页面展示。')
+    return hasText ? '结构化输出通过最小校验。' : '模型有返回，但业务不可用，需要 repair 或降级。'
+  } catch {
+    push(trace, 'JSON 解析', 'blocked', '模型输出不是合法 JSON。')
+    return '这类失败必须在服务端拦截，不能直接交给前端渲染。'
+  }
+}
+
+function buildPromptRegistryResult({ trace, input }) {
+  const hasVersion = /v\\d+/i.test(input)
+  push(trace, '任务路由', input.includes('task') || input.includes('任务') ? 'success' : 'warning', '前端传 taskType，不传完整 Prompt。')
+  push(trace, '版本记录', hasVersion ? 'success' : 'warning', 'Prompt 变更必须有版本号和原因。')
+  push(trace, '回归评测', 'success', '每次改 Prompt 都要跑样本集。')
+  return 'Prompt Registry 解决的是可维护性、回滚和质量门禁。'
+}
+
+function buildEvalResult({ trace, input }) {
+  const risky = /(保证|一定|下周|本周五|诊断|删除)/.test(input)
+  push(trace, '样本覆盖', input.trim() ? 'success' : 'warning', '至少要覆盖真实用户输入。')
+  push(trace, '风险样本', risky ? 'blocked' : 'success', risky ? '命中高风险表达，需要复核。' : '当前没有命中简单风险词。')
+  push(trace, '质量门禁', 'success', '升级模型或 Prompt 前后要对比指标。')
+  return '评测让 AI 功能从“感觉不错”变成可回归证据。'
+}
+
+function buildRagResult({ trace, input, strictMode }) {
+  const asksEvidence = /(字段|接口|来源|引用|证据)/.test(input)
+  push(trace, '查询理解', input.trim() ? 'success' : 'warning', '用户问题要转换成可检索查询。')
+  push(trace, '召回证据', asksEvidence ? 'success' : 'warning', '候选 chunk 必须带 metadata 和来源。')
+  push(trace, '拒答边界', strictMode ? 'success' : 'warning', '证据不足就拒答，不让模型补字段。')
+  return 'RAG 页面要看证据、引用和拒答，不是只看最终回答像不像。'
+}
+
+function buildToolResult({ trace, input }) {
+  const write = /(提交|删除|修改|创建|发送)/.test(input)
+  push(trace, '工具意图', 'success', write ? '识别为写操作。' : '识别为只读查询。')
+  push(trace, '参数校验', input.trim() ? 'success' : 'blocked', '模型生成的工具参数不能直接信任。')
+  push(trace, '确认边界', write ? 'blocked' : 'success', write ? '写操作必须二次确认。' : '只读操作可以直接返回 Trace。')
+  return write ? '工具调用被拦截：有副作用操作必须用户确认。' : '只读工具可以执行，但仍然要记录 Trace。'
+}
+
+function buildAgentResult({ trace, strictMode }) {
+  push(trace, '任务拆解', 'success', '理解目标 -> 选择工具 -> 执行 -> 检查证据 -> 输出。')
+  push(trace, '终止条件', strictMode ? 'success' : 'warning', '需要 maxSteps、成功条件和失败条件。')
+  push(trace, 'Trace 回放', 'success', '每一步都要留下输入、工具、结果和判断。')
+  return 'Agent 的核心不是自由，而是可观察、可终止、可回放。'
+}
+
+function buildMcpResult({ trace, input, strictMode }) {
+  try {
+    JSON.parse(input || '{}')
+    push(trace, '参数 Schema', 'success', 'MCP Tool 参数必须先过 Schema。')
+    push(trace, '服务端边界', 'success', '模型只能请求调用，真正权限在 MCP Server。')
+    push(trace, '资源最小化', strictMode ? 'success' : 'warning', '只暴露任务需要的最小资源。')
+    return 'MCP 页面要看工具契约、权限和资源边界。'
+  } catch {
+    push(trace, '参数 Schema', 'blocked', '参数不是有效 JSON。')
+    return 'MCP Server 应拒绝非法参数，真实业务函数不能执行。'
+  }
+}
+
+function buildObservabilityResult({ trace, input }) {
+  push(trace, 'requestId', 'success', '用户反馈问题时可以定位到一次调用。')
+  push(trace, '性能与成本', /(P95|秒|延迟|成本|token)/i.test(input) ? 'warning' : 'success', '记录耗时、token、provider 和错误类型。')
+  push(trace, '质量抽样', 'success', '线上不能只看 200 状态码，还要看内容质量。')
+  return 'AI 可观测性要同时看性能、成本、错误和质量。'
+}
+
+function buildProductResult({ trace, input, secondaryInput }) {
+  const highRisk = /(药|诊断|自杀|伤害|治疗|抑郁)/.test(input)
+  push(trace, '用户场景', input.trim() ? 'success' : 'warning', '先明确目标用户和使用边界。')
+  push(trace, 'AI 必要性', secondaryInput.trim() ? 'success' : 'warning', '说明为什么规则或普通表单不够。')
+  push(trace, '安全边界', highRisk ? 'blocked' : 'success', highRisk ? '触发高风险边界，需要拒答或升级。' : '当前未命中高风险词。')
+  return '偏产品项目要证明你能定义边界，不只是生成温柔文案。'
+}
+
+function buildPortfolioResult({ trace, input }) {
+  const signals = ['问题', '架构', '评测', '失败', '成本', '结果']
+  const found = signals.filter((signal) => input.includes(signal))
+  for (const signal of signals) {
+    push(trace, signal, found.includes(signal) ? 'success' : 'warning', found.includes(signal) ? '已有证据。' : '建议补充。')
+  }
+  return '作品集要用证据讲，不堆技术名词。'
+}
+
+function buildResult({ input, secondaryInput, strictMode }) {
+  const trace = []
+  const context = { trace, input, secondaryInput, strictMode }
+  const builders = {
+    gateway: buildGatewayResult,
+    streaming: buildStreamingResult,
+    schema: buildSchemaResult,
+    'prompt-registry': buildPromptRegistryResult,
+    eval: buildEvalResult,
+    rag: buildRagResult,
+    tool: buildToolResult,
+    agent: buildAgentResult,
+    mcp: buildMcpResult,
+    observability: buildObservabilityResult,
+    product: buildProductResult,
+    portfolio: buildPortfolioResult,
+    engineering: buildGatewayResult,
+  }
+  const output = (builders[lab.mode] || buildGatewayResult)(context)
+  return { trace, output }
+}
+
+export async function ${handlerName}({ readJsonBody, response, sendJson }) {
+  try {
+    const body = await readJsonBody()
+    const input = typeof body?.input === 'string' ? body.input : ''
+    const secondaryInput =
+      typeof body?.secondaryInput === 'string' ? body.secondaryInput : ''
+    const strictMode = body?.strictMode !== false
+    const result = buildResult({ input, secondaryInput, strictMode })
+
+    sendJson(response, 200, {
+      labId: lab.id,
+      apiPath: lab.apiPath,
+      ...result,
+    })
+  } catch (error) {
+    sendJson(response, 500, {
+      labId: lab.id,
+      message:
+        error instanceof Error
+          ? error.message
+          : '当天服务端 Demo 执行失败。',
+    })
+  }
+}
+`
+}
+
 for (const lab of advancedLabs) {
   const weekDir = path.join(advancedDaysRoot, `week-${lab.week}`)
   ensureDir(weekDir)
   fs.writeFileSync(
     path.join(weekDir, `day-${lab.day}.vue`),
-    `<script setup lang="ts">
-import AdvancedLabWorkbench from '../../shared/AdvancedLabWorkbench.vue'
-import type { AdvancedLabDefinition } from '../../registry'
-
-const lab: AdvancedLabDefinition = ${JSON.stringify(lab, null, 2)}
-</script>
-
-<template>
-  <AdvancedLabWorkbench :lab="lab" />
-</template>
-`,
+    makeStandaloneAdvancedLabVue(lab),
   )
 }
+
+const advancedServerRoot = path.join(root, 'demo-app', 'server', 'advanced-labs')
+emptyDir(advancedServerRoot)
+
+for (const lab of advancedLabs) {
+  const weekDir = path.join(advancedServerRoot, `week-${lab.week}`)
+  ensureDir(weekDir)
+  fs.writeFileSync(
+    path.join(weekDir, `day-${lab.day}.js`),
+    makeStandaloneAdvancedServerHandler(lab),
+  )
+}
+
+const advancedApiRoutesSource = `// 本文件由 scripts/generate-advanced-job-track.mjs 生成。
+// 每一天都有独立服务端 handler；修改课程后运行 npm run advanced:generate。
+${advancedLabs
+  .map(
+    (lab) =>
+      `import { ${handlerNameFor(lab)} } from './week-${lab.week}/day-${lab.day}.js'`,
+  )
+  .join('\n')}
+
+export const advancedApiRoutes = new Map([
+${advancedLabs
+  .map(
+    (lab) => `  ['${lab.apiPath}', ${handlerNameFor(lab)}],`,
+  )
+  .join('\n')}
+])
+`
+
+fs.writeFileSync(
+  path.join(advancedServerRoot, 'generated-advanced-api-routes.js'),
+  advancedApiRoutesSource,
+)
 
 const routesSource = `// 本文件由 scripts/generate-advanced-job-track.mjs 生成。
 // 每一天都有独立 Vue 文件；修改课程后运行 npm run advanced:generate。

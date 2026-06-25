@@ -1,4 +1,6 @@
 import http from 'node:http'
+import { advancedApiRoutes } from './advanced-labs/generated-advanced-api-routes.js'
+import { handleAiChat } from './ai-gateway/handleChat.js'
 import { handleLab01Rewrite } from './labs/01-ai-app-chain/handler.js'
 import { handleLab02Generate } from './labs/02-model-uncertainty/handler.js'
 import { getDeepSeekStatus } from './shared/deepseek-client.js'
@@ -24,6 +26,26 @@ async function readJsonBody(request) {
 }
 
 const server = http.createServer(async (request, response) => {
+  const advancedHandler = advancedApiRoutes.get(request.url)
+
+  if (request.method === 'POST' && advancedHandler) {
+    await advancedHandler({
+      response,
+      readJsonBody: () => readJsonBody(request),
+      sendJson,
+    })
+    return
+  }
+
+  if (request.method === 'POST' && request.url === '/api/ai/chat') {
+    await handleAiChat({
+      response,
+      readJsonBody: () => readJsonBody(request),
+      sendJson,
+    })
+    return
+  }
+
   if (
     request.method === 'POST' &&
     request.url === '/api/labs/01/rewrite'

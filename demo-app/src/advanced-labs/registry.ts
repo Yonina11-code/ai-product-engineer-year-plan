@@ -24,6 +24,7 @@ export interface AdvancedLabDefinition {
   dayGoal: string
   phase: string
   path: string
+  apiPath: string
   lessonPath: string
   reviewPath: string
   mode: AdvancedLabMode
@@ -31,6 +32,10 @@ export interface AdvancedLabDefinition {
   skills: string[]
   proof: string[]
   interview: string
+  flowSteps: string[]
+  codeFiles: string[]
+  backendFocus: string[]
+  acceptanceChecks: string[]
 }
 
 export const advancedLabs = generatedAdvancedLabs
