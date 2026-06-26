@@ -1,6 +1,7 @@
 <script setup lang="ts">
-import { ref } from 'vue'
+import { computed, onMounted, ref } from 'vue'
 
+type Provider = 'mock' | 'deepseek'
 type TraceStatus = 'success' | 'warning' | 'blocked'
 
 interface TraceItem {
@@ -9,241 +10,142 @@ interface TraceItem {
   detail: string
 }
 
+interface ChatResponse {
+  requestId?: string
+  provider?: Provider
+  model?: string
+  content?: string
+  usage?: {
+    prompt_tokens?: number
+    completion_tokens?: number
+    total_tokens?: number
+  } | null
+  durationMs?: number
+  error?: {
+    type?: string
+    message?: string
+  }
+}
+
+interface DeepSeekStatus {
+  configured?: boolean
+  model?: string
+  baseUrl?: string
+}
+
 const lab = {
-  "id": "W01D02",
-  "week": "01",
-  "day": "02",
-  "title": "AI Gateway：前端如何安全接入真实模型",
-  "dayTitle": "最小代码闭环",
-  "dayGoal": "只写一条能跑通的端到端链路，优先把输入、服务端、模型或数据、输出串起来。",
-  "phase": "阶段 1：AI 应用工程底座",
-  "path": "/advanced/week-01/day-02",
-  "apiPath": "/api/advanced/week-01/day-02",
-  "lessonPath": "/advanced-track/lessons/week-01/day-02.md",
-  "reviewPath": "/advanced-track/reviews/week-01.md",
-  "mode": "gateway",
-  "build": "在 demo-app 里做一个 Node AI Gateway：前端只请求自己的服务端，服务端支持 mock / DeepSeek Provider，统一返回格式、错误类型和 requestId。",
-  "skills": [
-    "AI Gateway",
-    "Provider 抽象",
-    "API Key 服务端隔离",
-    "统一响应契约",
-    "requestId"
+  id: 'W01D02',
+  week: '01',
+  day: '02',
+  title: 'AI Gateway：接入真实大模型',
+  dayTitle: '最小代码闭环',
+  dayGoal:
+    '从 Vue 页面发起请求，经由自己的 Node 服务端进入 AI Gateway，再调用 mock 或 DeepSeek Provider。',
+  phase: '阶段 1：AI 应用工程底座',
+  apiPath: '/api/ai/chat',
+  lessonPath: '/advanced-track/lessons/week-01/day-02.md',
+  reviewPath: '/advanced-track/reviews/week-01.md',
+  codeFiles: [
+    'demo-app/src/advanced-labs/days/week-01/day-02.vue',
+    'demo-app/server/index.js',
+    'demo-app/server/ai-gateway/handleChat.js',
+    'demo-app/server/providers/mockProvider.js',
+    'demo-app/server/providers/deepseekProvider.js',
+    'demo-app/server/shared/deepseek-client.js',
+    '.env',
   ],
-  "proof": [
-    "一张 AI Gateway 边界图",
-    "一次真实 DeepSeek 调用日志",
-    "三类失败日志：无 Key、超时、Provider 错误"
+  flowSteps: [
+    '页面只请求自己的服务端 /api/ai/chat。',
+    '服务端读取 .env 中的 DEEPSEEK_API_KEY，浏览器不接触 Key。',
+    'AI Gateway 根据 provider 选择 mock 或 DeepSeek。',
+    'Provider 返回内容后，服务端统一补充 requestId、model、usage 和 durationMs。',
+    '页面展示结果、错误和本次请求证据。',
   ],
-  "interview": "我没有在前端直接调模型，而是在服务端做 Gateway，隔离 API Key，并统一 Provider、错误、日志和降级策略。",
-  "flowSteps": [
-    "从当天 Vue 页面触发一次用户输入。",
-    "前端调用自己的服务端 API，而不是直接请求模型供应商。",
-    "服务端执行第一条代码任务：新增或整理 /api/ai/chat 接口，前端只调用自己的服务端。",
-    "服务端返回统一响应，前端展示成功或失败状态。",
-    "记录一次成功链路的 requestId / Trace / Network 证据。",
-    "重点看 API Key 是否只在服务端，以及 Provider 错误是否被统一归类。"
+  acceptanceChecks: [
+    'Network 中只能看到 /api/ai/chat，不能看到 DeepSeek API Key。',
+    '成功响应中能看到 requestId、provider、model 和 durationMs。',
+    '失败时能看到统一错误类型和用户可理解的提示。',
+    '服务端控制台能用 requestId 对应本次调用日志。',
   ],
-  "codeFiles": [
-    "demo-app/src/advanced-labs/days/week-01/day-02.vue",
-    "demo-app/server/advanced-labs/week-01/day-02.js",
-    "demo-app/server/index.js",
-    "demo-app/server/ai-gateway/handleChat.js",
-    "demo-app/server/providers/mockProvider.js",
-    "demo-app/server/providers/deepseekProvider.js",
-    ".env"
-  ],
-  "backendFocus": [
-    "Node HTTP 路由",
-    "环境变量读取",
-    "Provider service 分层",
-    "请求超时",
-    "错误分类"
-  ],
-  "acceptanceChecks": [
-    "页面能说明今天的代码流程，而不是只展示概念。",
-    "能指出至少一个服务端边界。",
-    "能跑通一条成功链路。",
-    "能在 Network 或日志里找到一次请求证据。",
-    "本周证据至少推进一项：一张 AI Gateway 边界图"
-  ]
 }
 
-const input = ref('')
-const secondaryInput = ref('')
-const strictMode = ref(true)
-const output = ref('')
-const trace = ref<TraceItem[]>([])
+const input = ref('请用 3 句话解释为什么 AI Gateway 不能让前端直接调用大模型。')
+const provider = ref<Provider>('deepseek')
 const isRunning = ref(false)
+const isCheckingStatus = ref(false)
+const output = ref('')
 const errorMessage = ref('')
+const trace = ref<TraceItem[]>([])
+const requestEvidence = ref<ChatResponse | null>(null)
+const deepSeekStatus = ref<DeepSeekStatus | null>(null)
 
-const modeNames: Record<string, string> = {
-  gateway: 'AI Gateway 工程台',
-  streaming: 'Streaming 体验台',
-  schema: '结构化输出实验台',
-  'prompt-registry': 'Prompt Registry 实验台',
-  eval: '评测与质量门禁实验台',
-  rag: 'RAG 工程实验台',
-  tool: 'Tool Calling 权限实验台',
-  agent: 'Agent Trace 实验台',
-  mcp: 'MCP Server 实验台',
-  observability: '可观测性实验台',
-  product: '产品安全边界实验台',
-  portfolio: '作品集面试实验台',
-  engineering: 'AI 工程实验台',
+const providerLabel = computed(() =>
+  provider.value === 'deepseek' ? 'DeepSeek 真实模型' : '教学 Mock',
+)
+
+const statusText = computed(() => {
+  if (!deepSeekStatus.value) {
+    return '正在读取服务端配置状态'
+  }
+
+  return deepSeekStatus.value.configured
+    ? `DeepSeek 已配置，模型：${deepSeekStatus.value.model || '未返回模型名'}`
+    : 'DeepSeek 未配置，可先用 Mock 跑通链路'
+})
+
+function resetResult() {
+  output.value = ''
+  errorMessage.value = ''
+  trace.value = []
+  requestEvidence.value = null
 }
-
-const inputLabels: Record<string, string> = {
-  gateway: '模型调用场景',
-  streaming: '用户生成请求',
-  schema: '模型原始输出',
-  'prompt-registry': '任务类型与变更说明',
-  eval: '待评测样本或输出',
-  rag: '用户问题或文档片段',
-  tool: '用户想执行的任务',
-  agent: 'Agent 目标',
-  mcp: 'MCP 工具参数',
-  observability: '线上异常现象',
-  product: '用户场景和风险',
-  portfolio: '项目经历描述',
-  engineering: '工程问题描述',
-}
-
-const placeholders: Record<string, string> = {
-  gateway: '例如：用户请求 DeepSeek 改写一句工作消息，要求 8 秒超时、失败可降级。',
-  streaming: '例如：生成一段较长建议，用户可能中途取消。',
-  schema: '{"rewrittenText":"","reason":"缺少原文"}',
-  'prompt-registry': '例如：workplace_rewrite v2 增加“不承诺排期”约束。',
-  eval: '例如：我们保证下周一上线新方案。',
-  rag: '例如：v2 用户详情接口的姓名字段是什么？',
-  tool: '例如：提交删除用户 1001 的请求。',
-  agent: '例如：根据接口契约生成开发清单，并标出未知字段。',
-  mcp: '{"fieldName":"userName","version":"v2"}',
-  observability: '例如：P95 延迟从 3 秒涨到 11 秒，错误率 8%。',
-  product: '例如：用户连续失眠并询问是否需要吃药。',
-  portfolio: '例如：我做了一个 RAG 助手，可以查询接口字段。',
-  engineering: '描述今天要验证的 AI 工程问题。',
-}
-
-const modeName = modeNames[lab.mode] ?? 'AI 工程实验台'
-const inputLabel = inputLabels[lab.mode] ?? '工程问题描述'
-const placeholder = placeholders[lab.mode] ?? '描述今天要验证的 AI 工程问题。'
 
 function push(step: string, status: TraceStatus, detail: string) {
   trace.value.push({ step, status, detail })
 }
 
-function runGatewayDemo() {
-  push('页面入口', 'success', '用户先在当天页面输入模型调用场景。')
-  push('服务端边界', 'success', '前端只请求 /api/ai/chat，API Key 不进入浏览器。')
-  push('Provider 分发', strictMode.value ? 'success' : 'warning', '服务端决定 mock / deepseek，并统一响应结构。')
-  push('失败处理', input.value.includes('超时') ? 'warning' : 'success', '无 Key、超时、Provider 错误都要归类。')
-  output.value = '今天重点不是 UI，而是看清 UI -> Server API -> Provider -> 统一响应的边界。'
+function formatTokenUsage(usage: ChatResponse['usage']) {
+  if (!usage) {
+    return '无 token 统计'
+  }
+
+  const prompt = usage.prompt_tokens ?? 0
+  const completion = usage.completion_tokens ?? 0
+  const total = usage.total_tokens ?? prompt + completion
+
+  return `输入 ${prompt} / 输出 ${completion} / 总计 ${total}`
 }
 
-function runStreamingDemo() {
-  push('用户输入', 'success', '页面保留原始输入，避免取消后丢失。')
-  push('服务端流', 'success', 'SSE 逐段返回内容，前端不等完整结果。')
-  push('取消生成', input.value.includes('取消') ? 'success' : 'warning', '需要 AbortController 或等价取消机制。')
-  push('状态机', 'success', 'idle -> streaming -> done / cancelled / failed。')
-  output.value = 'Streaming 的核心是体验状态可控，不是单纯把文字一点点显示出来。'
-}
+async function checkDeepSeekStatus() {
+  isCheckingStatus.value = true
 
-function runSchemaDemo() {
   try {
-    const parsed = JSON.parse(input.value || '{}')
-    const hasText = typeof parsed?.rewrittenText === 'string' && parsed.rewrittenText.trim()
-    push('JSON 解析', 'success', '模型原始输出至少是可解析 JSON。')
-    push('字段校验', hasText ? 'success' : 'blocked', hasText ? 'rewrittenText 有效。' : '缺少有效 rewrittenText。')
-    push('业务入口', hasText ? 'success' : 'warning', '只有校验后的结果才能进入页面展示。')
-    output.value = hasText ? '结构化输出通过最小校验。' : '模型有返回，但业务不可用，需要 repair 或降级。'
+    const response = await fetch('/api/providers/deepseek')
+    const data = (await response.json()) as DeepSeekStatus
+    deepSeekStatus.value = data
+    provider.value = data.configured ? 'deepseek' : 'mock'
   } catch {
-    push('JSON 解析', 'blocked', '模型输出不是合法 JSON。')
-    output.value = '这类失败必须在服务端拦截，不能直接交给前端渲染。'
+    deepSeekStatus.value = {
+      configured: false,
+    }
+    provider.value = 'mock'
+  } finally {
+    isCheckingStatus.value = false
   }
-}
-
-function runPromptRegistryDemo() {
-  const hasVersion = /v\d+/i.test(input.value)
-  push('任务路由', input.value.includes('task') || input.value.includes('任务') ? 'success' : 'warning', '前端传 taskType，不传完整 Prompt。')
-  push('版本记录', hasVersion ? 'success' : 'warning', 'Prompt 变更必须有版本号和原因。')
-  push('回归评测', 'success', '每次改 Prompt 都要跑样本集。')
-  output.value = 'Prompt Registry 解决的是可维护性、回滚和质量门禁。'
-}
-
-function runEvalDemo() {
-  const risky = /(保证|一定|下周|本周五|诊断|删除)/.test(input.value)
-  push('样本覆盖', input.value.trim() ? 'success' : 'warning', '至少要覆盖真实用户输入。')
-  push('风险样本', risky ? 'blocked' : 'success', risky ? '命中高风险表达，需要复核。' : '当前没有命中简单风险词。')
-  push('质量门禁', 'success', '升级模型或 Prompt 前后要对比指标。')
-  output.value = '评测让 AI 功能从“感觉不错”变成可回归证据。'
-}
-
-function runRagDemo() {
-  const asksEvidence = /(字段|接口|来源|引用|证据)/.test(input.value)
-  push('查询理解', input.value.trim() ? 'success' : 'warning', '用户问题要转换成可检索查询。')
-  push('召回证据', asksEvidence ? 'success' : 'warning', '候选 chunk 必须带 metadata 和来源。')
-  push('拒答边界', strictMode.value ? 'success' : 'warning', '证据不足就拒答，不让模型补字段。')
-  output.value = 'RAG 页面要看证据、引用和拒答，不是只看最终回答像不像。'
-}
-
-function runToolDemo() {
-  const write = /(提交|删除|修改|创建|发送)/.test(input.value)
-  push('工具意图', 'success', write ? '识别为写操作。' : '识别为只读查询。')
-  push('参数校验', input.value.trim() ? 'success' : 'blocked', '模型生成的工具参数不能直接信任。')
-  push('确认边界', write ? 'blocked' : 'success', write ? '写操作必须二次确认。' : '只读操作可以直接返回 Trace。')
-  output.value = write ? '工具调用被拦截：有副作用操作必须用户确认。' : '只读工具可以执行，但仍然要记录 Trace。'
-}
-
-function runAgentDemo() {
-  push('任务拆解', 'success', '理解目标 -> 选择工具 -> 执行 -> 检查证据 -> 输出。')
-  push('终止条件', strictMode.value ? 'success' : 'warning', '需要 maxSteps、成功条件和失败条件。')
-  push('Trace 回放', 'success', '每一步都要留下输入、工具、结果和判断。')
-  output.value = 'Agent 的核心不是自由，而是可观察、可终止、可回放。'
-}
-
-function runMcpDemo() {
-  try {
-    JSON.parse(input.value || '{}')
-    push('参数 Schema', 'success', 'MCP Tool 参数必须先过 Schema。')
-    push('服务端边界', 'success', '模型只能请求调用，真正权限在 MCP Server。')
-    push('资源最小化', strictMode.value ? 'success' : 'warning', '只暴露任务需要的最小资源。')
-    output.value = 'MCP 页面要看工具契约、权限和资源边界。'
-  } catch {
-    push('参数 Schema', 'blocked', '参数不是有效 JSON。')
-    output.value = 'MCP Server 应拒绝非法参数，真实业务函数不能执行。'
-  }
-}
-
-function runObservabilityDemo() {
-  push('requestId', 'success', '用户反馈问题时可以定位到一次调用。')
-  push('性能与成本', /(P95|秒|延迟|成本|token)/i.test(input.value) ? 'warning' : 'success', '记录耗时、token、provider 和错误类型。')
-  push('质量抽样', 'success', '线上不能只看 200 状态码，还要看内容质量。')
-  output.value = 'AI 可观测性要同时看性能、成本、错误和质量。'
-}
-
-function runProductDemo() {
-  const highRisk = /(药|诊断|自杀|伤害|治疗|抑郁)/.test(input.value)
-  push('用户场景', input.value.trim() ? 'success' : 'warning', '先明确目标用户和使用边界。')
-  push('AI 必要性', secondaryInput.value.trim() ? 'success' : 'warning', '说明为什么规则或普通表单不够。')
-  push('安全边界', highRisk ? 'blocked' : 'success', highRisk ? '触发高风险边界，需要拒答或升级。' : '当前未命中高风险词。')
-  output.value = '偏产品项目要证明你能定义边界，不只是生成温柔文案。'
-}
-
-function runPortfolioDemo() {
-  const signals = ['问题', '架构', '评测', '失败', '成本', '结果']
-  const found = signals.filter((signal) => input.value.includes(signal))
-  for (const signal of signals) {
-    push(signal, found.includes(signal) ? 'success' : 'warning', found.includes(signal) ? '已有证据。' : '建议补充。')
-  }
-  output.value = '作品集要用证据讲，不堆技术名词。'
 }
 
 async function runDemo() {
-  trace.value = []
-  output.value = ''
-  errorMessage.value = ''
+  resetResult()
   isRunning.value = true
+
+  const trimmedInput = input.value.trim()
+
+  push('页面输入', trimmedInput ? 'success' : 'blocked', trimmedInput || '输入为空')
+  push(
+    '服务端边界',
+    'success',
+    `浏览器请求 ${lab.apiPath}，provider=${provider.value}，不会携带 API Key。`,
+  )
 
   try {
     const response = await fetch(lab.apiPath, {
@@ -253,56 +155,69 @@ async function runDemo() {
       },
       body: JSON.stringify({
         input: input.value,
-        secondaryInput: secondaryInput.value,
-        strictMode: strictMode.value,
+        provider: provider.value,
       }),
     })
 
-    const data = await response.json()
+    const data = (await response.json()) as ChatResponse
+    requestEvidence.value = data
 
-    if (!response.ok) {
-      throw new Error(data?.message || '当天服务端 Demo 执行失败。')
+    if (!response.ok || data.error) {
+      const message = data.error?.message || 'AI Gateway 调用失败。'
+      push('Provider 调用', 'blocked', message)
+      push(
+        '统一错误',
+        'warning',
+        `requestId=${data.requestId || '未返回'}，type=${data.error?.type || 'unknown'}`,
+      )
+      throw new Error(message)
     }
 
-    trace.value = data.trace ?? []
-    output.value = data.output ?? ''
+    push(
+      'Provider 调用',
+      'success',
+      `${data.provider || provider.value} 返回成功，模型：${data.model || '未返回模型名'}。`,
+    )
+    push(
+      '运行证据',
+      'success',
+      `requestId=${data.requestId}，耗时 ${data.durationMs ?? 0}ms，${formatTokenUsage(data.usage)}。`,
+    )
+
+    output.value = data.content || ''
   } catch (error) {
     errorMessage.value =
-      error instanceof Error ? error.message : '当天服务端 Demo 执行失败。'
-    trace.value = [
-      {
-        step: '服务端请求',
-        status: 'blocked',
-        detail: errorMessage.value,
-      },
-    ]
-    output.value = '请确认 npm run demo 已启动，且当天服务端接口存在。'
+      error instanceof Error ? error.message : 'AI Gateway 调用失败。'
   } finally {
     isRunning.value = false
   }
 }
+
+onMounted(() => {
+  checkDeepSeekStatus()
+})
 </script>
 
 <template>
   <section class="advanced-lab-page">
-    <RouterLink class="back-link" to="/">← 返回高级 Demo 列表</RouterLink>
+    <RouterLink class="back-link" to="/">返回高级 Demo 列表</RouterLink>
 
     <header class="hero">
       <div>
-        <p class="eyebrow">W{{ lab.week }} · Day {{ lab.day }} · {{ lab.phase }}</p>
+        <p class="eyebrow">W{{ lab.week }} / Day {{ lab.day }} / {{ lab.phase }}</p>
         <h1>{{ lab.title }}</h1>
         <p>{{ lab.dayTitle }}：{{ lab.dayGoal }}</p>
       </div>
-      <div class="mode-badge">{{ modeName }}</div>
+      <div class="mode-badge">{{ providerLabel }}</div>
     </header>
 
     <section class="flow-panel">
       <div class="flow-title">
         <div>
           <p class="eyebrow">TODAY CODE FLOW</p>
-          <h2>今天这个页面背后的代码流程</h2>
+          <h2>今天要跑通的真实链路</h2>
         </div>
-        <span>本页面请求当天独立服务端接口：{{ lab.apiPath }}</span>
+        <span>页面请求：{{ lab.apiPath }}</span>
       </div>
 
       <div class="flow-grid">
@@ -316,14 +231,9 @@ async function runDemo() {
         <article class="card">
           <h3>重点文件</h3>
           <ul>
-            <li v-for="file in lab.codeFiles" :key="file"><code>{{ file }}</code></li>
-          </ul>
-        </article>
-
-        <article class="card">
-          <h3>后端补点</h3>
-          <ul>
-            <li v-for="item in lab.backendFocus" :key="item">{{ item }}</li>
+            <li v-for="file in lab.codeFiles" :key="file">
+              <code>{{ file }}</code>
+            </li>
           </ul>
         </article>
 
@@ -338,49 +248,72 @@ async function runDemo() {
 
     <div class="workbench">
       <section class="card control">
-        <h2>本日 Demo 输入</h2>
+        <div class="section-heading">
+          <div>
+            <p class="eyebrow">REAL MODEL CALL</p>
+            <h2>本日 Demo 输入</h2>
+          </div>
+          <button
+            class="secondary-button"
+            type="button"
+            :disabled="isCheckingStatus"
+            @click="checkDeepSeekStatus"
+          >
+            {{ isCheckingStatus ? '检查中...' : '刷新配置' }}
+          </button>
+        </div>
+
+        <p class="status-line" :class="{ ready: deepSeekStatus?.configured }">
+          {{ statusText }}
+        </p>
+
+        <fieldset>
+          <legend>模型来源</legend>
+          <label class="radio-control">
+            <input v-model="provider" type="radio" value="deepseek" />
+            <span>DeepSeek 真实模型</span>
+          </label>
+          <label class="radio-control">
+            <input v-model="provider" type="radio" value="mock" />
+            <span>教学 Mock</span>
+          </label>
+        </fieldset>
 
         <label>
-          <span>{{ inputLabel }}</span>
-          <textarea v-model="input" rows="6" :placeholder="placeholder" />
-        </label>
-
-        <label v-if="lab.mode === 'product'" class="extra-field">
-          <span>为什么 AI 是必要的？</span>
+          <span>发送给模型的内容</span>
           <textarea
-            v-model="secondaryInput"
-            rows="3"
-            placeholder="说明普通规则、表单或人工流程为什么不足"
+            v-model="input"
+            rows="6"
+            placeholder="输入一个你想让大模型回答的问题"
           />
         </label>
 
-        <label class="inline-control">
-          <input v-model="strictMode" type="checkbox" />
-          <span>启用严格工程边界</span>
-        </label>
-
         <button type="button" :disabled="isRunning" @click="runDemo">
-          {{ isRunning ? '运行中...' : `运行 W${lab.week} D${lab.day} Demo` }}
+          {{ isRunning ? '调用中...' : `运行 ${providerLabel}` }}
         </button>
       </section>
 
       <aside class="card task">
         <h2>今天要证明什么</h2>
-        <p>{{ lab.build }}</p>
+        <p>
+          前端页面没有直接请求模型供应商，而是通过自己的 Node 服务端进入
+          AI Gateway。API Key 只在服务端读取。
+        </p>
         <h3>课程文件</h3>
         <p>{{ lab.lessonPath }}</p>
         <h3>复盘文件</h3>
         <p>{{ lab.reviewPath }}</p>
-        <h3>本周证据</h3>
+        <h3>排查要点</h3>
         <ul>
-          <li v-for="item in lab.proof" :key="item">{{ item }}</li>
+          <li>Network 中检查请求地址。</li>
+          <li>响应中记录 requestId。</li>
+          <li>服务端控制台查同一个 requestId。</li>
+          <li>失败时确认 error.type 和 message。</li>
         </ul>
-        <h3>面试表达</h3>
-        <p>{{ lab.interview }}</p>
       </aside>
     </div>
 
-    <section v-if="trace.length || output" class="card result">
+    <section v-if="trace.length || output || errorMessage" class="card result">
       <h2>运行证据</h2>
       <div class="trace-grid">
         <article
@@ -393,10 +326,46 @@ async function runDemo() {
           <p>{{ item.detail }}</p>
         </article>
       </div>
+
       <div v-if="output" class="output-box">
-        <strong>工程结论</strong>
+        <strong>模型输出</strong>
         <p>{{ output }}</p>
       </div>
+
+      <div v-if="errorMessage" class="error-box">
+        <strong>调用失败</strong>
+        <p>{{ errorMessage }}</p>
+      </div>
+
+      <dl v-if="requestEvidence" class="evidence-grid">
+        <div>
+          <dt>requestId</dt>
+          <dd>{{ requestEvidence.requestId || '未返回' }}</dd>
+        </div>
+        <div>
+          <dt>provider</dt>
+          <dd>{{ requestEvidence.provider || provider }}</dd>
+        </div>
+        <div>
+          <dt>model</dt>
+          <dd>{{ requestEvidence.model || '未返回' }}</dd>
+        </div>
+        <div>
+          <dt>duration</dt>
+          <dd>{{ requestEvidence.durationMs ?? 0 }}ms</dd>
+        </div>
+        <div>
+          <dt>usage</dt>
+          <dd>{{ formatTokenUsage(requestEvidence.usage) }}</dd>
+        </div>
+        <div v-if="requestEvidence.error">
+          <dt>error</dt>
+          <dd>
+            {{ requestEvidence.error.type || 'unknown' }} /
+            {{ requestEvidence.error.message || '未返回错误信息' }}
+          </dd>
+        </div>
+      </dl>
     </section>
   </section>
 </template>
@@ -414,7 +383,8 @@ async function runDemo() {
 }
 
 .hero,
-.flow-title {
+.flow-title,
+.section-heading {
   display: flex;
   align-items: end;
   justify-content: space-between;
@@ -430,7 +400,6 @@ async function runDemo() {
   color: #5769d8;
   font-size: 13px;
   font-weight: 900;
-  letter-spacing: 0.08em;
 }
 
 h1 {
@@ -481,7 +450,7 @@ h3 {
 
 .flow-grid {
   display: grid;
-  grid-template-columns: minmax(0, 1.3fr) minmax(220px, 0.8fr);
+  grid-template-columns: minmax(0, 1.1fr) minmax(260px, 0.9fr);
   gap: 14px;
 }
 
@@ -492,7 +461,7 @@ h3 {
 }
 
 .main-flow {
-  grid-row: span 3;
+  grid-row: span 2;
   background: #f3f5ff !important;
 }
 
@@ -520,10 +489,51 @@ code {
   gap: 20px;
 }
 
+.status-line {
+  margin: 0;
+  padding: 12px 14px;
+  border: 1px solid #f0d4a9;
+  border-radius: 10px;
+  color: #8a5a16;
+  background: #fff8ed;
+  line-height: 1.6;
+}
+
+.status-line.ready {
+  border-color: #bfe6d2;
+  color: #20764f;
+  background: #f1fbf6;
+}
+
+fieldset {
+  display: flex;
+  gap: 16px;
+  margin: 0;
+  padding: 14px;
+  border: 1px solid #dfe4ee;
+  border-radius: 12px;
+}
+
+legend {
+  padding: 0 6px;
+  font-weight: 800;
+}
+
 label {
   display: grid;
   gap: 8px;
   font-weight: 700;
+}
+
+.radio-control {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+}
+
+.radio-control input {
+  width: 18px;
+  height: 18px;
 }
 
 textarea {
@@ -536,17 +546,6 @@ textarea {
   line-height: 1.6;
 }
 
-.inline-control {
-  display: flex;
-  align-items: center;
-  gap: 10px;
-}
-
-.inline-control input {
-  width: 18px;
-  height: 18px;
-}
-
 button {
   border: 0;
   border-radius: 10px;
@@ -556,6 +555,17 @@ button {
   cursor: pointer;
   font: inherit;
   font-weight: 800;
+}
+
+button:disabled {
+  opacity: 0.65;
+  cursor: not-allowed;
+}
+
+.secondary-button {
+  padding: 10px 14px;
+  color: #4354c6;
+  background: #edf0ff;
 }
 
 .task {
@@ -601,16 +611,53 @@ button {
   background: #fff3f4;
 }
 
-.output-box {
+.output-box,
+.error-box,
+.evidence-grid {
   margin-top: 16px;
   padding: 18px;
   border-radius: 12px;
+}
+
+.output-box {
   background: #edf0ff;
 }
 
-.output-box p {
+.error-box {
+  border: 1px solid #f0bdc3;
+  color: #8a1f2c;
+  background: #fff3f4;
+}
+
+.output-box p,
+.error-box p {
   margin-bottom: 0;
   line-height: 1.7;
+  white-space: pre-wrap;
+}
+
+.evidence-grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(180px, 1fr));
+  gap: 12px;
+  background: #f8f9fc;
+}
+
+.evidence-grid div {
+  display: grid;
+  gap: 4px;
+}
+
+.evidence-grid dt {
+  color: #657086;
+  font-size: 13px;
+  font-weight: 800;
+}
+
+.evidence-grid dd {
+  margin: 0;
+  color: #1f2937;
+  word-break: break-all;
 }
 
 @media (max-width: 900px) {
@@ -630,8 +677,13 @@ button {
 
 @media (max-width: 640px) {
   .hero,
-  .flow-title {
+  .flow-title,
+  .section-heading {
     align-items: start;
+    flex-direction: column;
+  }
+
+  fieldset {
     flex-direction: column;
   }
 }
