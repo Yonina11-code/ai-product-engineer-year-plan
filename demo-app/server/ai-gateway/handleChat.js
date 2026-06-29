@@ -9,6 +9,20 @@ function normalizeProvider(provider) {
   return provider === 'deepseek' ? 'deepseek' : 'mock';
 }
 
+function shouldBlockSensitiveRequest(input) {
+  const normalizedInput = input.toLowerCase();
+  const sensitivePatterns = [
+    /api\s*key/i,
+    /secret/i,
+    /system\s*prompt/i,
+    /系统.*(密钥|秘钥|提示词|prompt)/i,
+    /(密钥|秘钥|key).*(输出|告诉|提供|泄露|打印)/i,
+    /(输出|告诉|提供|泄露|打印).*(密钥|秘钥|key)/i,
+  ];
+
+  return sensitivePatterns.some((pattern) => pattern.test(normalizedInput));
+}
+
 function toUserError(error) {
   const message =
     error instanceof Error ? error.message : 'AI 服务暂时不可用。';
@@ -45,10 +59,34 @@ export async function handleAiChat({ readJsonBody, response, sendJson }) {
     if (!input) {
       sendJson(response, 400, {
         requestId,
+        durationMs: Date.now() - startedAt,
         error: {
           type: 'invalid_input',
           message: '请输入要发送给模型的内容。',
         },
+      });
+      return;
+    }
+
+    if (shouldBlockSensitiveRequest(input)) {
+      const durationMs = Date.now() - startedAt;
+      const error = {
+        type: 'policy_blocked',
+        message: '请求涉及系统密钥或内部配置，服务端已拦截。',
+      };
+
+      console.warn('[AI Gateway] policy blocked', {
+        requestId,
+        provider,
+        durationMs,
+        error,
+      });
+
+      sendJson(response, 403, {
+        requestId,
+        provider,
+        durationMs,
+        error,
       });
       return;
     }

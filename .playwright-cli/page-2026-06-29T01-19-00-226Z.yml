@@ -1,0 +1,160 @@
+- generic [ref=e3]:
+  - banner [ref=e4]:
+    - link "AI AI Engineer Advanced Labs 求职向高级训练项目" [ref=e5] [cursor=pointer]:
+      - /url: /
+      - generic [ref=e6]: AI
+      - generic [ref=e7]:
+        - strong [ref=e8]: AI Engineer Advanced Labs
+        - generic [ref=e9]: 求职向高级训练项目
+    - navigation [ref=e10]:
+      - link "高级 Demo" [ref=e11] [cursor=pointer]:
+        - /url: /
+      - link "旧入门 Demo" [ref=e12] [cursor=pointer]:
+        - /url: /legacy-labs
+  - main [ref=e13]:
+    - generic [ref=e14]:
+      - link "返回高级 Demo 列表" [ref=e15] [cursor=pointer]:
+        - /url: /
+      - generic [ref=e16]:
+        - generic [ref=e17]:
+          - paragraph [ref=e18]: W01 / Day 04 / 阶段 1：AI 应用工程底座
+          - heading "AI Gateway：前端如何安全接入真实模型" [level=1] [ref=e19]
+          - paragraph [ref=e20]: 失败样本与评测：用真实 Gateway 请求验证正常、边界、失败和恶意输入，而不是只看成功演示。
+        - generic [ref=e21]: 教学 Mock
+      - generic [ref=e22]:
+        - generic [ref=e23]:
+          - generic [ref=e24]:
+            - paragraph [ref=e25]: TODAY CODE FLOW
+            - heading "今天要验证的真实失败链路" [level=2] [ref=e26]
+          - generic [ref=e27]: 页面请求：/api/advanced/week-01/day-04
+        - generic [ref=e28]:
+          - article [ref=e29]:
+            - heading "执行链路" [level=3] [ref=e30]
+            - list [ref=e31]:
+              - listitem [ref=e32]: 选择一条样本，或手动输入一条正常 / 边界 / 失败 / 恶意输入。
+              - listitem [ref=e33]: 页面请求当天接口 /api/advanced/week-01/day-04。
+              - listitem [ref=e34]: 当天接口委托真实 AI Gateway handler，而不是返回固定 trace。
+              - listitem [ref=e35]: Gateway 做空输入校验、provider 选择、requestId、错误归一化。
+              - listitem [ref=e36]: 页面记录 requestId、error.type、用户可见提示和失败归因。
+          - article [ref=e37]:
+            - heading "重点文件" [level=3] [ref=e38]
+            - list [ref=e39]:
+              - listitem [ref=e40]:
+                - code [ref=e41]: demo-app/src/advanced-labs/days/week-01/day-04.vue
+              - listitem [ref=e42]:
+                - code [ref=e43]: demo-app/server/advanced-labs/week-01/day-04.js
+              - listitem [ref=e44]:
+                - code [ref=e45]: demo-app/server/ai-gateway/handleChat.js
+              - listitem [ref=e46]:
+                - code [ref=e47]: demo-app/server/providers/mockProvider.js
+              - listitem [ref=e48]:
+                - code [ref=e49]: demo-app/server/providers/deepseekProvider.js
+          - article [ref=e50]:
+            - heading "验收动作" [level=3] [ref=e51]
+            - list [ref=e52]:
+              - listitem [ref=e53]: 空输入会真实返回 invalid_input，而不是页面自己假装失败。
+              - listitem [ref=e54]: 成功和失败响应都能看到 requestId。
+              - listitem [ref=e55]: DeepSeek 未配置时能归因为 missing_api_key。
+              - listitem [ref=e56]: Network 中只能看到自己的服务端接口，看不到模型 API Key。
+      - generic [ref=e57]:
+        - generic [ref=e58]:
+          - paragraph [ref=e59]: SAMPLES
+          - heading "选择一条样本" [level=2] [ref=e60]
+        - generic [ref=e61]:
+          - button "S01 · 正常 解释 Gateway" [ref=e62] [cursor=pointer]:
+            - strong [ref=e63]: S01 · 正常
+            - generic [ref=e64]: 解释 Gateway
+          - button "S02 · 正常 面试表达" [ref=e65] [cursor=pointer]:
+            - strong [ref=e66]: S02 · 正常
+            - generic [ref=e67]: 面试表达
+          - button "S03 · 边界 单词输入" [ref=e68] [cursor=pointer]:
+            - strong [ref=e69]: S03 · 边界
+            - generic [ref=e70]: 单词输入
+          - button "S04 · 边界 空格输入" [ref=e71] [cursor=pointer]:
+            - strong [ref=e72]: S04 · 边界
+            - generic [ref=e73]: 空格输入
+          - button "S05 · 失败 无 Key" [ref=e74] [cursor=pointer]:
+            - strong [ref=e75]: S05 · 失败
+            - generic [ref=e76]: 无 Key
+          - button "S06 · 恶意 密钥泄露" [ref=e77] [cursor=pointer]:
+            - strong [ref=e78]: S06 · 恶意
+            - generic [ref=e79]: 密钥泄露
+        - paragraph [ref=e80]: 预期观察：应被服务端判空拦截。
+      - generic [ref=e81]:
+        - generic [ref=e82]:
+          - generic [ref=e83]:
+            - generic [ref=e84]:
+              - paragraph [ref=e85]: REAL GATEWAY CALL
+              - heading "运行样本" [level=2] [ref=e86]
+            - button "刷新配置" [ref=e87] [cursor=pointer]
+          - paragraph [ref=e88]: DeepSeek 已配置，模型：deepseek-v4-flash
+          - group "模型来源" [ref=e89]:
+            - generic [ref=e90]: 模型来源
+            - generic [ref=e91]:
+              - radio "教学 Mock" [checked] [ref=e92]
+              - generic [ref=e93]: 教学 Mock
+            - generic [ref=e94]:
+              - radio "DeepSeek 真实模型" [ref=e95]
+              - generic [ref=e96]: DeepSeek 真实模型
+          - generic [ref=e97]:
+            - generic [ref=e98]: 发送给 Gateway 的输入
+            - textbox "发送给 Gateway 的输入" [ref=e99]:
+              - /placeholder: 输入正常、边界、失败或恶意样本
+          - button "运行 教学 Mock" [ref=e100] [cursor=pointer]
+        - complementary [ref=e101]:
+          - heading "今天要证明什么" [level=2] [ref=e102]
+          - paragraph [ref=e103]: 不是证明模型能成功回答一次，而是证明空输入、无 Key、Provider 错误等失败能被 Gateway 归类，并留下 requestId。
+          - heading "课程文件" [level=3] [ref=e104]
+          - paragraph [ref=e105]: /advanced-track/lessons/week-01/day-04.md
+          - heading "复盘文件" [level=3] [ref=e106]
+          - paragraph [ref=e107]: /advanced-track/reviews/week-01.md
+          - heading "记录字段" [level=3] [ref=e108]
+          - list [ref=e109]:
+            - listitem [ref=e110]: 样本编号和类型
+            - listitem [ref=e111]: provider
+            - listitem [ref=e112]: requestId
+            - listitem [ref=e113]: error.type
+            - listitem [ref=e114]: 失败归因
+      - generic [ref=e155]:
+        - heading "运行证据" [level=2] [ref=e156]
+        - generic [ref=e157]:
+          - article [ref=e158]:
+            - strong [ref=e159]: 样本输入
+            - paragraph [ref=e160]: S04 / 边界 / 空格输入
+          - article [ref=e161]:
+            - strong [ref=e162]: 服务端边界
+            - paragraph [ref=e163]: 浏览器请求 /api/advanced/week-01/day-04，当天接口再进入真实 AI Gateway。
+          - article [ref=e164]:
+            - strong [ref=e165]: Gateway 判定
+            - paragraph [ref=e166]: 请输入要发送给模型的内容。
+          - article [ref=e167]:
+            - strong [ref=e168]: 失败归因
+            - paragraph [ref=e169]: requestId=ai_1782695939197_243dfc，type=invalid_input，归因=参数校验问题
+        - generic [ref=e170]:
+          - strong [ref=e171]: 调用失败
+          - paragraph [ref=e172]: 请输入要发送给模型的内容。
+        - generic [ref=e173]:
+          - generic [ref=e174]:
+            - term [ref=e175]: sample
+            - definition [ref=e176]: S04
+          - generic [ref=e177]:
+            - term [ref=e178]: requestId
+            - definition [ref=e179]: ai_1782695939197_243dfc
+          - generic [ref=e180]:
+            - term [ref=e181]: provider
+            - definition [ref=e182]: mock
+          - generic [ref=e183]:
+            - term [ref=e184]: result
+            - definition [ref=e185]: invalid_input
+          - generic [ref=e186]:
+            - term [ref=e187]: attribution
+            - definition [ref=e188]: 参数校验问题
+          - generic [ref=e189]:
+            - term [ref=e190]: duration
+            - definition [ref=e191]: 0ms
+          - generic [ref=e192]:
+            - term [ref=e193]: usage
+            - definition [ref=e194]: 无 token 统计
+          - generic [ref=e195]:
+            - term [ref=e196]: error
+            - definition [ref=e197]: invalid_input / 请输入要发送给模型的内容。

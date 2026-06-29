@@ -1,0 +1,2 @@
+[     134ms] [ERROR] Failed to load resource: the server responded with a status of 404 (Not Found) @ http://127.0.0.1:5180/favicon.ico:0
+[   90054ms] [ERROR] Failed to load resource: the server responded with a status of 400 (Bad Request) @ http://127.0.0.1:5180/api/advanced/week-01/day-04:0
